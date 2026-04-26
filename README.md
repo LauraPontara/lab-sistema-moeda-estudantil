@@ -34,11 +34,11 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-22-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-latest-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![GitHub license](https://img.shields.io/github/license/seu-usuario/seu-repositorio?style=for-the-badge&color=007ec6&logo=opensourceinitiative)
-![GitHub last commit](https://img.shields.io/github/last-commit/seu-usuario/seu-repositorio?style=for-the-badge&logo=clockify)
+![GitHub license](https://img.shields.io/github/license/LauraPontara/lab-sistema-moeda-estudantil?style=for-the-badge&color=007ec6&logo=opensourceinitiative)
+![GitHub last commit](https://img.shields.io/github/last-commit/LauraPontara/lab-sistema-moeda-estudantil?style=for-the-badge&logo=clockify)
 
 ---
 
@@ -126,8 +126,8 @@ O projeto é desenvolvido em três releases progressivas, seguindo metodologia �
 | Node.js | 22.x |
 | NestJS | 11.x |
 | TypeScript | 5.x |
-| PostgreSQL | 15.x |
-| ORM | *a definir* |
+| Supabase (PostgreSQL) | latest |
+| Drizzle ORM | latest |
 | Autenticação | JWT |
 
 ### ⚙️ Infraestrutura & DevOps
@@ -143,7 +143,7 @@ O projeto é desenvolvido em três releases progressivas, seguindo metodologia �
 
 ## 🏗 Arquitetura
 
-O sistema segue arquitetura **MVC**, com separação clara entre as camadas de apresentação (frontend Next.js), lógica de negócio (backend NestJS) e persistência (PostgreSQL).
+O sistema segue arquitetura **MVC**, com separação clara entre as camadas de apresentação (frontend Next.js), lógica de negócio (backend NestJS) e persistência (Supabase/PostgreSQL via Drizzle ORM).
 
 > [!NOTE]
 > A definição detalhada da arquitetura de pastas, padrões de projeto (Repository, Service Layer, DTOs, etc.) e estratégia de acesso ao banco de dados (ORM, DAO) será concluída na Sprint 01 da Release 1 e documentada aqui.
@@ -157,7 +157,7 @@ Next.js (Frontend)
 NestJS API (Backend)
       |
       v
-PostgreSQL (Banco de Dados)
+Supabase / PostgreSQL (Banco de Dados)
 ```
 
 ### Diagramas
