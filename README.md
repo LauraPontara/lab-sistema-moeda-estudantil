@@ -1,6 +1,6 @@
 <!-- [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=99999999&assignment_repo_type=AssignmentRepo) [![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=99999999) -->
 
-<a href="https://classroom.github.com/online_ide?assignment_repo_id=99999999&assignment_repo_type=AssignmentRepo"><img src="https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg" width="200"/></a> <a href="https://classroom.github.com/open-in-codespaces?assignment_repo_id=99999999"><img src="https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg" width="250"/></a>
+<a href="https://vscode.dev/github/LauraPontara/lab-sistema-moeda-estudantil"><img src="https://img.shields.io/badge/Abrir%20no-VS%20Code-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white" width="200"/></a> <a href="https://codespaces.new/LauraPontara/lab-sistema-moeda-estudantil"><img src="https://img.shields.io/badge/Abrir%20no-Codespaces-181717?style=for-the-badge&logo=github&logoColor=white" width="220"/></a>
 
 ---
 
@@ -65,9 +65,9 @@
 
 ## 🔗 Links Úteis
 
-- 🌐 **Demo Online:** [Acesse a Aplicação Web](<link-da-demo-web>)
-- 📖 **Documentação da API:** [Swagger/OpenAPI](<link-para-swagger>)
-- 📋 **Repositório GitHub:** [github.com/seu-usuario/seu-repositorio](<link-do-repositorio>)
+- 🌐 **Demo Online:** [Acesse a Aplicação Web](link-da-demo-web)
+- 📖 **Documentação da API:** [Swagger/OpenAPI](link-para-swagger)
+- 📋 **Repositório GitHub:** [github.com/seu-usuario/seu-repositorio](link-do-repositorio)
 
 ---
 
@@ -106,38 +106,38 @@ O projeto é desenvolvido em três releases progressivas, seguindo metodologia �
 
 ### 💻 Front-end
 
-| Tecnologia | Versão |
-|---|---|
-| Next.js | 15.x |
-| React | 19.x |
-| TypeScript | 5.x |
-| Tailwind CSS | 4.x |
+| Tecnologia        | Versão |
+| ----------------- | ------ |
+| Next.js           | 15.x   |
+| React             | 19.x   |
+| TypeScript        | 5.x    |
+| Tailwind CSS      | 4.x    |
 | Radix UI / shadcn | latest |
-| React Hook Form | latest |
-| Zod | latest |
-| Axios | latest |
-| Zustand | latest |
-| Lucide React | latest |
+| React Hook Form   | latest |
+| Zod               | latest |
+| Axios             | latest |
+| Zustand           | latest |
+| Lucide React      | latest |
 
 ### 🖥️ Back-end
 
-| Tecnologia | Versão |
-|---|---|
-| Node.js | 22.x |
-| NestJS | 11.x |
-| TypeScript | 5.x |
+| Tecnologia            | Versão |
+| --------------------- | ------ |
+| Node.js               | 22.x   |
+| NestJS                | 11.x   |
+| TypeScript            | 5.x    |
 | Supabase (PostgreSQL) | latest |
-| Drizzle ORM | latest |
-| Autenticação | JWT |
+| Drizzle ORM           | latest |
+| Autenticação          | JWT    |
 
 ### ⚙️ Infraestrutura & DevOps
 
-| Tecnologia | Uso |
-|---|---|
-| Docker / Docker Compose | Containerização local |
-| Vercel | Deploy do front-end |
-| Render | Deploy do back-end |
-| GitHub Actions | CI/CD *(a configurar)* |
+| Tecnologia              | Uso                    |
+| ----------------------- | ---------------------- |
+| Docker / Docker Compose | Containerização local  |
+| Vercel                  | Deploy do front-end    |
+| Render                  | Deploy do back-end     |
+| GitHub Actions          | CI/CD _(a configurar)_ |
 
 ---
 
@@ -164,13 +164,13 @@ Supabase / PostgreSQL (Banco de Dados)
 
 > Os diagramas serão adicionados conforme produzidos nas sprints. Os arquivos-fonte (.asta ou equivalente) estarão disponíveis na pasta `/docs/diagramas`.
 
-| Diagrama | Arquivo |
-|---|---|
+| Diagrama                 | Arquivo                                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
 | Diagrama de Casos de Uso | [Sistema de moedas estudantil.png](./docs/diagramas/Diagrama-de-caso-de-uso/Sistema%20de%20moedas%20estudantil.png) |
-| Diagrama de Classes | *em breve* |
-| Diagrama de Componentes | *em breve* |
-| Modelo ER | *em breve* |
-| Diagrama de Sequências | *em breve* |
+| Diagrama de Classes      | _em breve_                                                                                                          |
+| Diagrama de Componentes  | _em breve_                                                                                                          |
+| Modelo ER                | _em breve_                                                                                                          |
+| Diagrama de Sequências   | _em breve_                                                                                                          |
 
 ### Diagrama de Caso de Uso
 
@@ -272,7 +272,7 @@ cd backend
 npm run start:dev
 ```
 
-🚀 *API disponível em `http://localhost:3001`*
+🚀 _API disponível em `http://localhost:3001`_
 
 **Terminal 2 — Front-end (Next.js):**
 
@@ -281,7 +281,7 @@ cd frontend
 npm run dev
 ```
 
-🎨 *Aplicação disponível em `http://localhost:3000`*
+🎨 _Aplicação disponível em `http://localhost:3000`_
 
 ---
 
@@ -359,13 +359,13 @@ npm run build
 
 ### 🌐 Aplicação Web
 
-| Tela | Captura |
-|:---:|:---:|
-| **Página de Login** | *em breve* |
-| **Dashboard do Aluno** | *em breve* |
-| **Envio de Moedas (Professor)** | *em breve* |
-| **Catálogo de Vantagens** | *em breve* |
-| **Extrato de Conta** | *em breve* |
+|              Tela               |  Captura   |
+| :-----------------------------: | :--------: |
+|       **Página de Login**       | _em breve_ |
+|     **Dashboard do Aluno**      | _em breve_ |
+| **Envio de Moedas (Professor)** | _em breve_ |
+|    **Catálogo de Vantagens**    | _em breve_ |
+|      **Extrato de Conta**       | _em breve_ |
 
 ---
 
@@ -399,11 +399,11 @@ npm run test:cov
 
 ## 👥 Autores
 
-| 👤 Nome | 🖼️ Foto | :octocat: GitHub | 💼 LinkedIn | 📤 Gmail |
-|---------|----------|-----------------|-------------|-----------|
-| Eric Leal | <div align="center"><img src="https://github.com/Eric-Leal.png" width="70px" height="70px" style="border-radius:50%"></div> | <div align="center"><a href="https://github.com/Eric-Leal"><img src="https://joaopauloaramuni.github.io/image/github6.png" width="50px" height="50px"></a></div> | <div align="center"><a href="https://linkedin.com/in/ericgleal"><img src="https://joaopauloaramuni.github.io/image/linkedin2.png" width="50px" height="50px"></a></div> | <div align="center"><a href="mailto:eric@gmail.com"><img src="https://joaopauloaramuni.github.io/image/gmail3.png" width="50px" height="50px"></a></div> |
-| Laura Pontara | <div align="center"><img src="https://github.com/LauraPontara.png" width="70px" height="70px" style="border-radius:50%"></div> | <div align="center"><a href="https://github.com/LauraPontara"><img src="https://joaopauloaramuni.github.io/image/github6.png" width="50px" height="50px"></a></div> | <div align="center"><a href="https://linkedin.com/in/laura-pontara"><img src="https://joaopauloaramuni.github.io/image/linkedin2.png" width="50px" height="50px"></a></div> | <div align="center"><a href="mailto:laura@gmail.com"><img src="https://joaopauloaramuni.github.io/image/gmail3.png" width="50px" height="50px"></a></div> |
-| Giuliano Percope | <div align="center"><img src="https://github.com/GiulianoLBP.png" width="70px" height="70px" style="border-radius:50%"></div> | <div align="center"><a href="https://github.com/GiulianoLBP"><img src="https://joaopauloaramuni.github.io/image/github6.png" width="50px" height="50px"></a></div> | <div align="center"><a href="https://www.linkedin.com/in/giuliano-lb-percope/"><img src="https://joaopauloaramuni.github.io/image/linkedin2.png" width="50px" height="50px"></a></div> | <div align="center"><a href="mailto:giuliano@gmail.com"><img src="https://joaopauloaramuni.github.io/image/gmail3.png" width="50px" height="50px"></a></div> |
+| 👤 Nome          | 🖼️ Foto                                                                                                                        | :octocat: GitHub                                                                                                                                                    | 💼 LinkedIn                                                                                                                                                                            | 📤 Gmail                                                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Eric Leal        | <div align="center"><img src="https://github.com/Eric-Leal.png" width="70px" height="70px" style="border-radius:50%"></div>    | <div align="center"><a href="https://github.com/Eric-Leal"><img src="https://joaopauloaramuni.github.io/image/github6.png" width="50px" height="50px"></a></div>    | <div align="center"><a href="https://linkedin.com/in/ericgleal"><img src="https://joaopauloaramuni.github.io/image/linkedin2.png" width="50px" height="50px"></a></div>                | <div align="center"><a href="mailto:eric@gmail.com"><img src="https://joaopauloaramuni.github.io/image/gmail3.png" width="50px" height="50px"></a></div>     |
+| Laura Pontara    | <div align="center"><img src="https://github.com/LauraPontara.png" width="70px" height="70px" style="border-radius:50%"></div> | <div align="center"><a href="https://github.com/LauraPontara"><img src="https://joaopauloaramuni.github.io/image/github6.png" width="50px" height="50px"></a></div> | <div align="center"><a href="https://linkedin.com/in/laura-pontara"><img src="https://joaopauloaramuni.github.io/image/linkedin2.png" width="50px" height="50px"></a></div>            | <div align="center"><a href="mailto:laura@gmail.com"><img src="https://joaopauloaramuni.github.io/image/gmail3.png" width="50px" height="50px"></a></div>    |
+| Giuliano Percope | <div align="center"><img src="https://github.com/GiulianoLBP.png" width="70px" height="70px" style="border-radius:50%"></div>  | <div align="center"><a href="https://github.com/GiulianoLBP"><img src="https://joaopauloaramuni.github.io/image/github6.png" width="50px" height="50px"></a></div>  | <div align="center"><a href="https://www.linkedin.com/in/giuliano-lb-percope/"><img src="https://joaopauloaramuni.github.io/image/linkedin2.png" width="50px" height="50px"></a></div> | <div align="center"><a href="mailto:giuliano@gmail.com"><img src="https://joaopauloaramuni.github.io/image/gmail3.png" width="50px" height="50px"></a></div> |
 
 > [!TIP]
 > 💡 Atualize os e-mails reais de cada integrante antes de publicar o repositório.
@@ -414,7 +414,7 @@ npm run test:cov
 
 1. Faça um `fork` do projeto.
 2. Crie uma branch para sua feature (`git checkout -b feature/minha-feature`).
-3. Commit suas mudanças (`git commit -m 'feat: Adiciona nova funcionalidade X'`). *(Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/))*
+3. Commit suas mudanças (`git commit -m 'feat: Adiciona nova funcionalidade X'`). _(Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/))_
 4. Faça o `push` para a branch (`git push origin feature/minha-feature`).
 5. Abra um **Pull Request**.
 
