@@ -71,4 +71,4 @@
 | 🧑‍🏫 Professor | 5 |
 | 🏢 Empresa Parceira | 4 |
 | 🔧 Administrador | 2 |
-| **Total** | **18** |
+| **Total** | **19** |

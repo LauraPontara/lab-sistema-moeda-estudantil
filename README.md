@@ -45,6 +45,7 @@
 ## 📚 Índice
 
 - [🔗 Links Úteis](#-links-úteis)
+- [📖 Histórias de Usuário](#-histórias-de-usuário)
 - [📝 Sobre o Projeto](#-sobre-o-projeto)
 - [✨ Funcionalidades Principais](#-funcionalidades-principais)
 - [🛠 Tecnologias Utilizadas](#-tecnologias-utilizadas)
@@ -67,6 +68,12 @@
 - 🌐 **Demo Online:** [Acesse a Aplicação Web](<link-da-demo-web>)
 - 📖 **Documentação da API:** [Swagger/OpenAPI](<link-para-swagger>)
 - 📋 **Repositório GitHub:** [github.com/seu-usuario/seu-repositorio](<link-do-repositorio>)
+
+---
+
+## 📖 Histórias de Usuário
+
+- 🧾 **Release 1:** [Acessar Histórias de Usuário](./docs/historias-de-usuario/historias_de_usuario.md)
 
 ---
 
@@ -159,11 +166,15 @@ PostgreSQL (Banco de Dados)
 
 | Diagrama | Arquivo |
 |---|---|
-| Diagrama de Casos de Uso | *em breve* |
+| Diagrama de Casos de Uso | [Sistema de moedas estudantil.png](./docs/diagramas/Diagrama-de-caso-de-uso/Sistema%20de%20moedas%20estudantil.png) |
 | Diagrama de Classes | *em breve* |
 | Diagrama de Componentes | *em breve* |
 | Modelo ER | *em breve* |
 | Diagrama de Sequências | *em breve* |
+
+### Diagrama de Caso de Uso
+
+![Diagrama de Caso de Uso](./docs/diagramas/Diagrama-de-caso-de-uso/Sistema%20de%20moedas%20estudantil.png)
 
 ---
 
