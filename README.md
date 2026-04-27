@@ -167,14 +167,26 @@ Supabase / PostgreSQL (Banco de Dados)
 | Diagrama                 | Arquivo                                                                                                             |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------- |
 | Diagrama de Casos de Uso | [Sistema de moedas estudantil.png](./docs/diagramas/Diagrama-de-caso-de-uso/Sistema%20de%20moedas%20estudantil.png) |
-| Diagrama de Classes      | _em breve_                                                                                                          |
-| Diagrama de Componentes  | _em breve_                                                                                                          |
+| Diagrama de Classes      | [Diagrama de classes.png](./docs/diagramas/Diagrama-de-classes/Diagrama%20de%20classes.png)                         |
+| Diagrama de Componentes  | [Diagrama de componentes.png](./docs/diagramas/Diagrama-de-componentes/Diagrama%20de%20componentes.png)            |
 | Modelo ER                | _em breve_                                                                                                          |
 | Diagrama de Sequências   | _em breve_                                                                                                          |
 
 ### Diagrama de Caso de Uso
 
 ![Diagrama de Caso de Uso](./docs/diagramas/Diagrama-de-caso-de-uso/Sistema%20de%20moedas%20estudantil.png)
+
+Fonte editavel: [Sistema de moedas estudantil.asta](./docs/diagramas/Diagrama-de-caso-de-uso/Sistema%20de%20moedas%20estudantil.asta)
+
+### Diagrama de Classes
+
+![Diagrama de Classes](./docs/diagramas/Diagrama-de-classes/Diagrama%20de%20classes.png)
+
+Fonte editavel: [Diagrama de classes.asta](./docs/diagramas/Diagrama-de-classes/Diagrama%20de%20classes.asta)
+
+### Diagrama de Componentes
+
+![Diagrama de Componentes](./docs/diagramas/Diagrama-de-componentes/Diagrama%20de%20componentes.png)
 
 ---
 
