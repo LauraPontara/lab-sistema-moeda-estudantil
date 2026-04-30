@@ -29,7 +29,7 @@
 ## 🚧 Status do Projeto
 
 [![Versão](https://img.shields.io/badge/Versão-v1.0.0-blue?style=for-the-badge)](https://github.com/seu-usuario/seu-repositorio/releases)
-![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-149ECA?style=for-the-badge&logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
@@ -108,7 +108,7 @@ O projeto é desenvolvido em três releases progressivas, seguindo metodologia �
 
 | Tecnologia        | Versão |
 | ----------------- | ------ |
-| Next.js           | 15.x   |
+| Next.js           | 16.x   |
 | React             | 19.x   |
 | TypeScript        | 5.x    |
 | Tailwind CSS      | 4.x    |
