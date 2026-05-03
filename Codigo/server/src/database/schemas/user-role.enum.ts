@@ -1,0 +1,6 @@
+export enum UserRole {
+  STUDENT = 'STUDENT',
+  PARTNER_COMPANY = 'PARTNER_COMPANY',
+  PROFESSOR = 'PROFESSOR',
+  ADMIN = 'ADMIN',
+}
