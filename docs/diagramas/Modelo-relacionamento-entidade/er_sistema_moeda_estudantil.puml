@@ -1,0 +1,191 @@
+@startuml er_sistema_moeda_estudantil
+
+title Sistema de Moeda Estudantil — Modelo Entidade-Relacionamento (Release 1 — v2)
+
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 8
+
+skinparam entity {
+  BackgroundColor #FFFDE7
+  BorderColor #F9A825
+  FontColor #333333
+  FontSize 13
+}
+
+skinparam class {
+  BackgroundColor #FFFDE7
+  BorderColor #F9A825
+}
+
+' ─────────────────────────────────────────
+' ENTIDADES
+' ─────────────────────────────────────────
+
+entity "USUARIO" as USUARIO {
+  * id_usuario : UUID <<PK>>
+  --
+  * email      : VARCHAR(255) <<UNIQUE>>
+  * senha_hash : VARCHAR(255)
+  * perfil     : ENUM('ALUNO','PROFESSOR',\n'EMPRESA_PARCEIRA','ADMINISTRADOR')
+}
+
+entity "INSTITUICAO" as INSTITUICAO {
+  * id_instituicao : UUID <<PK>>
+  --
+  * nome           : VARCHAR(255)
+  * endereco       : VARCHAR(500)
+}
+
+entity "ALUNO" as ALUNO {
+  * id_aluno       : UUID <<PK>>
+  --
+  * id_usuario     : UUID <<FK>> <<UNIQUE>>
+  * id_instituicao : UUID <<FK>>
+  --
+  * nome           : VARCHAR(255)
+  * cpf            : CHAR(11) <<UNIQUE>>
+  * rg             : VARCHAR(20)
+  * endereco       : VARCHAR(500)
+  * curso          : VARCHAR(255)
+  * saldo          : DECIMAL(12,2)
+}
+
+entity "PROFESSOR" as PROFESSOR {
+  * id_professor   : UUID <<PK>>
+  --
+  * id_usuario     : UUID <<FK>> <<UNIQUE>>
+  * id_instituicao : UUID <<FK>>
+  --
+  * nome           : VARCHAR(255)
+  * cpf            : CHAR(11) <<UNIQUE>>
+  * departamento   : VARCHAR(255)
+  * saldo          : DECIMAL(12,2)
+}
+
+entity "EMPRESA_PARCEIRA" as EMPRESA {
+  * id_empresa    : UUID <<PK>>
+  --
+  * id_usuario    : UUID <<FK>> <<UNIQUE>>
+  --
+  * nome_fantasia : VARCHAR(255)
+  * cnpj          : CHAR(14) <<UNIQUE>>
+    descricao     : TEXT
+}
+
+entity "ADMINISTRADOR" as ADMIN {
+  * id_administrador : UUID <<PK>>
+  --
+  * id_usuario       : UUID <<FK>> <<UNIQUE>>
+  --
+  * nome             : VARCHAR(255)
+}
+
+entity "VANTAGEM" as VANTAGEM {
+  * id_vantagem  : UUID <<PK>>
+  --
+  * id_empresa   : UUID <<FK>>
+  --
+  * nome         : VARCHAR(255)
+  * descricao    : TEXT
+  * foto_url     : VARCHAR(500)
+  * custo_moedas : DECIMAL(12,2)
+  * ativo        : BOOLEAN
+}
+
+' Problema 1 — TRANSACAO separada em dois fluxos distintos
+entity "TRANSACAO_ENVIO" as TRANSACAO_ENVIO {
+  * id_transacao_envio : UUID <<PK>>
+  --
+  * id_professor       : UUID <<FK>>
+  * id_aluno           : UUID <<FK>>
+  --
+  * quantidade         : DECIMAL(12,2)
+  * motivo             : TEXT
+  * data_hora          : TIMESTAMP
+}
+
+entity "TRANSACAO_RESGATE" as TRANSACAO_RESGATE {
+  * id_transacao_resgate : UUID <<PK>>
+  --
+  * id_aluno             : UUID <<FK>>
+  * id_vantagem          : UUID <<FK>>
+  --
+  * quantidade           : DECIMAL(12,2)
+  * data_hora            : TIMESTAMP
+}
+
+' Problema 2 — id_aluno e id_vantagem removidos (derivados via TRANSACAO_RESGATE)
+entity "CUPOM" as CUPOM {
+  * id_cupom             : UUID <<PK>>
+  --
+  * id_transacao_resgate : UUID <<FK>>
+  --
+  * codigo               : VARCHAR(64) <<UNIQUE>>
+  * data_emissao         : TIMESTAMP
+  * utilizado            : BOOLEAN
+}
+
+' Problema 4 — Rastreabilidade da reposição semestral de moedas (US11)
+entity "CREDITO_SEMESTRAL" as CREDITO {
+  * id_credito          : UUID <<PK>>
+  --
+  * id_professor        : UUID <<FK>>
+  --
+  * quantidade          : DECIMAL(12,2)
+  * semestre_referencia : VARCHAR(10)
+  * data_credito        : TIMESTAMP
+}
+
+' ─────────────────────────────────────────
+' NOTAS
+' ─────────────────────────────────────────
+
+' Problema 3 — saldo mantido como campo armazenado com constraint explícita
+note right of ALUNO
+  saldo: campo armazenado.
+  Incrementado em cada TRANSACAO_ENVIO recebida.
+  Decrementado em cada TRANSACAO_RESGATE realizada.
+  Toda alteração deve ocorrer em transação atômica.
+end note
+
+note right of PROFESSOR
+  saldo: campo armazenado.
+  Iniciado e incrementado via CREDITO_SEMESTRAL (1.000 moedas/semestre — US11).
+  Decrementado em cada TRANSACAO_ENVIO realizada.
+  Toda alteração deve ocorrer em transação atômica.
+end note
+
+' ─────────────────────────────────────────
+' RELACIONAMENTOS
+' ─────────────────────────────────────────
+
+' Herança / especialização de USUARIO
+' Problema 5 — Cardinalidade corrigida de ||--|| para ||--o| (0..1 por perfil)
+USUARIO     ||--o| ALUNO              : "é um\n(1:0..1)"
+USUARIO     ||--o| PROFESSOR          : "é um\n(1:0..1)"
+USUARIO     ||--o| EMPRESA            : "é um\n(1:0..1)"
+USUARIO     ||--o| ADMIN              : "é um\n(1:0..1)"
+
+' Aluno e Professor pertencem a uma Instituição
+INSTITUICAO ||--o{ ALUNO              : "pertence a\n(N:1)"
+INSTITUICAO ||--o{ PROFESSOR          : "pertence a\n(N:1)"
+
+' Empresa oferece Vantagens
+EMPRESA     ||--o{ VANTAGEM           : "oferece\n(1:N)"
+
+' Envio de moedas: Professor → Aluno
+PROFESSOR   ||--o{ TRANSACAO_ENVIO    : "realiza envio\n(1:N)"
+ALUNO       ||--o{ TRANSACAO_ENVIO    : "recebe\n(1:N)"
+
+' Resgate de vantagem: Aluno → Vantagem
+ALUNO       ||--o{ TRANSACAO_RESGATE  : "resgata\n(1:N)"
+VANTAGEM    ||--o{ TRANSACAO_RESGATE  : "é resgatada em\n(1:N)"
+
+' Resgate gera Cupom (0..1 por transação)
+TRANSACAO_RESGATE ||--o| CUPOM        : "gera\n(1:0..1)"
+
+' Professor recebe crédito semestral automático
+PROFESSOR   ||--o{ CREDITO_SEMESTRAL  : "recebe crédito\n(1:N)"
+
+@enduml
