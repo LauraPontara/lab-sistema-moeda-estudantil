@@ -9,17 +9,21 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import type { JwtPayload } from '../auth/jwt-payload.interface';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { CreatePartnerCompanyDto } from './dto/create-partner-company.dto';
 import { CreateProfessorDto } from './dto/create-professor.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AdministratorModel } from './models/administrator.model';
-import { PartnerCompanyModel } from './models/partner-company.model';
-import { ProfessorModel } from './models/professor.model';
-import { StudentModel } from './models/student.model';
-import { UserModel } from './models/user.model';
+import type { AdministratorModel } from './models/administrator.model';
+import type { PartnerCompanyModel } from './models/partner-company.model';
+import type { ProfessorModel } from './models/professor.model';
+import type { StudentModel } from './models/student.model';
+import type { UserProfileModel } from './models/user-profile.model';
+import type { UserModel } from './models/user.model';
 import { UsersService } from './users.service';
 
 @Controller()
@@ -45,6 +49,19 @@ export class UsersController {
     @Body() dto: UpdateUserDto,
   ): Promise<UserModel> {
     return this.usersService.update(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('users/me/profile')
+  updateProfile(
+    @CurrentUser() currentUser: JwtPayload,
+    @Body() dto: UpdateProfileDto,
+  ): Promise<UserProfileModel> {
+    return this.usersService.updateProfile(
+      currentUser.sub,
+      currentUser.role,
+      dto,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

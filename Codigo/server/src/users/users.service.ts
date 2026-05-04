@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '../database/schemas';
 import { EmailAlreadyInUseException } from '../common/exceptions/email-already-in-use.exception';
@@ -6,12 +6,14 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { CreatePartnerCompanyDto } from './dto/create-partner-company.dto';
 import { CreateProfessorDto } from './dto/create-professor.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserMapper } from './mappers/user.mapper';
 import { AdministratorModel } from './models/administrator.model';
 import { PartnerCompanyModel } from './models/partner-company.model';
 import { ProfessorModel } from './models/professor.model';
 import { StudentModel } from './models/student.model';
+import { UserProfileModel } from './models/user-profile.model';
 import { UserModel } from './models/user.model';
 import { UsersRepository } from './repositories/users.repository';
 
@@ -117,6 +119,57 @@ export class UsersService {
     return UserMapper.toModel(user);
   }
 
+  async updateProfile(
+    userId: string,
+    role: UserRole,
+    dto: UpdateProfileDto,
+  ): Promise<UserProfileModel> {
+    if (dto.document) {
+      this.ensureDocumentMatchesRole(role, dto.document);
+    }
+
+    switch (role) {
+      case UserRole.STUDENT: {
+        const student = await this.usersRepository.updateStudentProfile(
+          userId,
+          dto,
+        );
+
+        if (!student) {
+          throw new NotFoundException('Aluno nao encontrado.');
+        }
+
+        return UserMapper.toStudentProfileModel(student);
+      }
+      case UserRole.PROFESSOR: {
+        const professor = await this.usersRepository.updateProfessorProfile(
+          userId,
+          dto,
+        );
+
+        if (!professor) {
+          throw new NotFoundException('Professor nao encontrado.');
+        }
+
+        return UserMapper.toProfessorProfileModel(professor);
+      }
+      case UserRole.PARTNER_COMPANY: {
+        const partnerCompany =
+          await this.usersRepository.updatePartnerCompanyProfile(userId, dto);
+
+        if (!partnerCompany) {
+          throw new NotFoundException('Empresa parceira nao encontrada.');
+        }
+
+        return UserMapper.toPartnerCompanyProfileModel(partnerCompany);
+      }
+      case UserRole.ADMIN:
+      default: {
+        throw new BadRequestException('Perfil sem dados editaveis.');
+      }
+    }
+  }
+
   async delete(id: string): Promise<void> {
     const deleted = await this.usersRepository.delete(id);
 
@@ -141,5 +194,21 @@ export class UsersService {
 
   private hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, 10);
+  }
+
+  private ensureDocumentMatchesRole(role: UserRole, document: string): void {
+    const cpfRegex = /^\d{11}$|^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+    const cnpjRegex = /^\d{14}$|^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
+
+    if (
+      (role === UserRole.STUDENT || role === UserRole.PROFESSOR) &&
+      !cpfRegex.test(document)
+    ) {
+      throw new BadRequestException('CPF invalido para este perfil.');
+    }
+
+    if (role === UserRole.PARTNER_COMPANY && !cnpjRegex.test(document)) {
+      throw new BadRequestException('CNPJ invalido para este perfil.');
+    }
   }
 }

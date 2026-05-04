@@ -3,6 +3,7 @@ import { AdministratorModel } from '../models/administrator.model';
 import { PartnerCompanyModel } from '../models/partner-company.model';
 import { ProfessorModel } from '../models/professor.model';
 import { StudentModel } from '../models/student.model';
+import { UserProfileModel } from '../models/user-profile.model';
 
 type UserWithStudentProfile = {
   user: AuthenticatedUser;
@@ -95,6 +96,45 @@ export class UserMapper {
     return {
       ...this.toModel(row.user),
       administratorProfileId: row.profile.id,
+    };
+  }
+
+  static toStudentProfileModel(row: UserWithStudentProfile): UserProfileModel {
+    return {
+      ...this.toModel(row.user),
+      displayName: row.profile.name,
+      document: row.profile.cpf,
+      documentType: 'CPF',
+      rg: row.profile.rg,
+      address: row.profile.address,
+      course: row.profile.course,
+      institutionId: row.profile.institutionId,
+    };
+  }
+
+  static toPartnerCompanyProfileModel(
+    row: UserWithPartnerCompanyProfile,
+  ): UserProfileModel {
+    return {
+      ...this.toModel(row.user),
+      displayName: row.profile.tradeName,
+      document: row.profile.cnpj,
+      documentType: 'CNPJ',
+      address: row.profile.address,
+      contactPhone: row.profile.contactPhone,
+    };
+  }
+
+  static toProfessorProfileModel(
+    row: UserWithProfessorProfile,
+  ): UserProfileModel {
+    return {
+      ...this.toModel(row.user),
+      displayName: row.profile.name,
+      document: row.profile.cpf,
+      documentType: 'CPF',
+      department: row.profile.department,
+      institutionId: row.profile.institutionId,
     };
   }
 }

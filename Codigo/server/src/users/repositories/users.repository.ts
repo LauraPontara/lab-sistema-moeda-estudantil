@@ -15,6 +15,7 @@ import { CreateAdminDto } from '../dto/create-admin.dto';
 import { CreatePartnerCompanyDto } from '../dto/create-partner-company.dto';
 import { CreateProfessorDto } from '../dto/create-professor.dto';
 import { CreateStudentDto } from '../dto/create-student.dto';
+import { UpdateProfileDto } from '../dto/update-profile.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { AuthenticatedUser } from '../models/user.model';
 
@@ -86,6 +87,18 @@ export class UsersRepository {
       .orderBy(studentProfiles.name);
   }
 
+  async findStudentByUserId(
+    userId: string,
+  ): Promise<UserWithStudentProfile | null> {
+    const [row] = await this.db
+      .select({ user: users, profile: studentProfiles })
+      .from(users)
+      .innerJoin(studentProfiles, eq(studentProfiles.userId, users.id))
+      .where(eq(users.id, userId))
+      .limit(1);
+    return row ?? null;
+  }
+
   async findPartnerCompanies(): Promise<UserWithPartnerCompanyProfile[]> {
     return this.db
       .select({ user: users, profile: partnerCompanyProfiles })
@@ -97,12 +110,39 @@ export class UsersRepository {
       .orderBy(partnerCompanyProfiles.tradeName);
   }
 
+  async findPartnerCompanyByUserId(
+    userId: string,
+  ): Promise<UserWithPartnerCompanyProfile | null> {
+    const [row] = await this.db
+      .select({ user: users, profile: partnerCompanyProfiles })
+      .from(users)
+      .innerJoin(
+        partnerCompanyProfiles,
+        eq(partnerCompanyProfiles.userId, users.id),
+      )
+      .where(eq(users.id, userId))
+      .limit(1);
+    return row ?? null;
+  }
+
   async findProfessors(): Promise<UserWithProfessorProfile[]> {
     return this.db
       .select({ user: users, profile: professorProfiles })
       .from(users)
       .innerJoin(professorProfiles, eq(professorProfiles.userId, users.id))
       .orderBy(professorProfiles.name);
+  }
+
+  async findProfessorByUserId(
+    userId: string,
+  ): Promise<UserWithProfessorProfile | null> {
+    const [row] = await this.db
+      .select({ user: users, profile: professorProfiles })
+      .from(users)
+      .innerJoin(professorProfiles, eq(professorProfiles.userId, users.id))
+      .where(eq(users.id, userId))
+      .limit(1);
+    return row ?? null;
   }
 
   async findAdministrators(): Promise<UserWithAdministratorProfile[]> {
@@ -240,6 +280,141 @@ export class UsersRepository {
       .returning();
 
     return user ?? null;
+  }
+
+  async updateStudentProfile(
+    userId: string,
+    dto: UpdateProfileDto,
+  ): Promise<UserWithStudentProfile | null> {
+    const updates: Partial<typeof studentProfiles.$inferInsert> = {};
+
+    if (dto.displayName !== undefined) updates.name = dto.displayName;
+    if (dto.document !== undefined) updates.cpf = dto.document;
+    if (dto.rg !== undefined) updates.rg = dto.rg;
+    if (dto.address !== undefined) updates.address = dto.address;
+    if (dto.course !== undefined) updates.course = dto.course;
+    if (dto.institutionId !== undefined) {
+      updates.institutionId = dto.institutionId;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return this.findStudentByUserId(userId);
+    }
+
+    return this.db.transaction(async (tx) => {
+      const [profile] = await tx
+        .update(studentProfiles)
+        .set(updates)
+        .where(eq(studentProfiles.userId, userId))
+        .returning();
+
+      if (!profile) {
+        return null;
+      }
+
+      await tx
+        .update(users)
+        .set({ updatedAt: new Date() })
+        .where(eq(users.id, userId));
+
+      const [row] = await tx
+        .select({ user: users, profile: studentProfiles })
+        .from(users)
+        .innerJoin(studentProfiles, eq(studentProfiles.userId, users.id))
+        .where(eq(users.id, userId))
+        .limit(1);
+
+      return row ?? null;
+    });
+  }
+
+  async updatePartnerCompanyProfile(
+    userId: string,
+    dto: UpdateProfileDto,
+  ): Promise<UserWithPartnerCompanyProfile | null> {
+    const updates: Partial<typeof partnerCompanyProfiles.$inferInsert> = {};
+
+    if (dto.displayName !== undefined) updates.tradeName = dto.displayName;
+    if (dto.document !== undefined) updates.cnpj = dto.document;
+    if (dto.address !== undefined) updates.address = dto.address;
+    if (dto.contactPhone !== undefined) updates.contactPhone = dto.contactPhone;
+
+    if (Object.keys(updates).length === 0) {
+      return this.findPartnerCompanyByUserId(userId);
+    }
+
+    return this.db.transaction(async (tx) => {
+      const [profile] = await tx
+        .update(partnerCompanyProfiles)
+        .set(updates)
+        .where(eq(partnerCompanyProfiles.userId, userId))
+        .returning();
+
+      if (!profile) {
+        return null;
+      }
+
+      await tx
+        .update(users)
+        .set({ updatedAt: new Date() })
+        .where(eq(users.id, userId));
+
+      const [row] = await tx
+        .select({ user: users, profile: partnerCompanyProfiles })
+        .from(users)
+        .innerJoin(
+          partnerCompanyProfiles,
+          eq(partnerCompanyProfiles.userId, users.id),
+        )
+        .where(eq(users.id, userId))
+        .limit(1);
+
+      return row ?? null;
+    });
+  }
+
+  async updateProfessorProfile(
+    userId: string,
+    dto: UpdateProfileDto,
+  ): Promise<UserWithProfessorProfile | null> {
+    const updates: Partial<typeof professorProfiles.$inferInsert> = {};
+
+    if (dto.displayName !== undefined) updates.name = dto.displayName;
+    if (dto.document !== undefined) updates.cpf = dto.document;
+    if (dto.department !== undefined) updates.department = dto.department;
+    if (dto.institutionId !== undefined) {
+      updates.institutionId = dto.institutionId;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return this.findProfessorByUserId(userId);
+    }
+
+    return this.db.transaction(async (tx) => {
+      const [profile] = await tx
+        .update(professorProfiles)
+        .set(updates)
+        .where(eq(professorProfiles.userId, userId))
+        .returning();
+
+      if (!profile) {
+        return null;
+      }
+
+      await tx
+        .update(users)
+        .set({ updatedAt: new Date() })
+        .where(eq(users.id, userId));
+
+      const [row] = await tx
+        .select({ user: users, profile: professorProfiles })
+        .from(users)
+        .innerJoin(professorProfiles, eq(professorProfiles.userId, users.id))
+        .where(eq(users.id, userId))
+        .limit(1);
+
+      return row ?? null;
+    });
   }
 
   async delete(id: string): Promise<boolean> {
