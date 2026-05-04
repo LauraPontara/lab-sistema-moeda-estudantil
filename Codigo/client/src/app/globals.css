@@ -146,6 +146,16 @@
   --shadow-soft: 0 12px 28px rgba(10, 13, 23, 0.45);
 }
 
+/* ── AnimatedThemeToggler View Transition ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html[data-magicui-theme-vt="active"]::view-transition-group(root) {
+  animation-duration: var(--magicui-theme-toggle-vt-duration);
+}
+
 body {
   min-height: 100vh;
   background: hsl(var(--background));

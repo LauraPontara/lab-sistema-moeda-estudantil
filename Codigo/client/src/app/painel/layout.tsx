@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { CoinIcon } from "@/components/ui/CoinIcon";
-import { useEffect, useState } from "react";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
+import { useEffect } from "react";
 
 const studentNav = [
   { label: "Painel", href: "/painel", icon: PainelIcon },
@@ -64,17 +65,12 @@ export default function DashboardLayout({
   const { user, profile, isLoading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.replace("/entrar");
     }
   }, [isLoading, user, router]);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-  }, [darkMode]);
 
   if (isLoading || !user) {
     return (
@@ -138,18 +134,10 @@ export default function DashboardLayout({
               {displayName}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setDarkMode((v) => !v)}
+          <AnimatedThemeToggler
+            variant="circle"
             className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-              {darkMode
-                ? <circle cx="12" cy="12" r="5" />
-                : <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />}
-            </svg>
-            Modo {darkMode ? "claro" : "escuro"}
-          </button>
+          />
         </div>
       </aside>
 
