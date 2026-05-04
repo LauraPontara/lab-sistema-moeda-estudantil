@@ -39,7 +39,7 @@ export function Header() {
 
         <div className="hidden items-center gap-3 md:flex">
           <Link
-            href="/login"
+            href="/entrar"
             className="font-bold text-sm text-foreground transition-colors hover:text-primary"
           >
             Entrar

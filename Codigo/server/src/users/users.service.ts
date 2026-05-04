@@ -170,6 +170,36 @@ export class UsersService {
     }
   }
 
+  async getProfile(
+    userId: string,
+    role: UserRole,
+  ): Promise<UserProfileModel> {
+    switch (role) {
+      case UserRole.STUDENT: {
+        const student = await this.usersRepository.findStudentByUserId(userId);
+        if (!student) throw new NotFoundException('Aluno nao encontrado.');
+        return UserMapper.toStudentProfileModel(student);
+      }
+      case UserRole.PARTNER_COMPANY: {
+        const partnerCompany =
+          await this.usersRepository.findPartnerCompanyByUserId(userId);
+        if (!partnerCompany)
+          throw new NotFoundException('Empresa parceira nao encontrada.');
+        return UserMapper.toPartnerCompanyProfileModel(partnerCompany);
+      }
+      case UserRole.PROFESSOR: {
+        const professor =
+          await this.usersRepository.findProfessorByUserId(userId);
+        if (!professor)
+          throw new NotFoundException('Professor nao encontrado.');
+        return UserMapper.toProfessorProfileModel(professor);
+      }
+      case UserRole.ADMIN:
+      default:
+        throw new BadRequestException('Perfil sem dados extras.');
+    }
+  }
+
   async delete(id: string): Promise<void> {
     const deleted = await this.usersRepository.delete(id);
 

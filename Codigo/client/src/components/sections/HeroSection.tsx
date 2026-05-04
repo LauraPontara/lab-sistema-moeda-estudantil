@@ -51,7 +51,7 @@ export function HeroSection() {
             <ToonButton variant="primary" size="lg" href="/cadastro">
               Começar agora
             </ToonButton>
-            <ToonButton variant="outline" size="lg" href="/login">
+            <ToonButton variant="outline" size="lg" href="/entrar">
               Já tenho conta
             </ToonButton>
           </div>

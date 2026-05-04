@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Alegreya_Sans_SC, Lilita_One, Nunito } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 
 const displayFont = Alegreya_Sans_SC({
   variable: "--font-display",
@@ -36,7 +37,7 @@ export default function RootLayout({
       className={`${displayFont.variable} ${toonFont.variable} ${bodyFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-body">
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

@@ -46,7 +46,7 @@ export function PartnersSection() {
             <ToonButton
               variant="dark"
               size="md"
-              href="/cadastro-empresa"
+              href="/cadastro"
               className="mt-2 self-start"
             >
               Cadastrar empresa
