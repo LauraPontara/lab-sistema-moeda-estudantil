@@ -33,7 +33,7 @@ export function ToonButton({
   type = "button",
 }: ToonButtonProps) {
   const base =
-    "inline-flex items-center justify-center gap-2 rounded-full border-[3px] font-display font-extrabold tracking-wide shadow-toon transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none select-none";
+    "inline-flex items-center justify-center gap-2 rounded-full border-[3px] font-display font-extrabold tracking-wide shadow-[4px_4px_0_0_hsl(var(--border))] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none select-none";
 
   const classes = `${base} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
 

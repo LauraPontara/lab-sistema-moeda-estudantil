@@ -48,18 +48,18 @@ export function Header() {
         <div className="hidden items-center gap-3 md:flex">
           <AnimatedThemeToggler
             variant="circle"
-            className="flex h-9 w-9 items-center justify-center rounded-full border-[3px] border-border bg-surface shadow-toon-sm transition-all hover:bg-muted active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+            className="flex h-9 w-9 items-center justify-center rounded-full border-[3px] border-border bg-surface shadow-[2px_2px_0_0_hsl(var(--border))] transition-all hover:bg-muted active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
           />
 
           {isLoggedIn ? (
             <>
-              <ToonButton variant="secondary" size="sm" href="/painel">
+              <ToonButton variant="dark" size="sm" href="/painel">
                 Meu painel
               </ToonButton>
               <button
                 type="button"
                 onClick={logout}
-                className="font-bold text-sm text-foreground transition-colors hover:text-primary"
+                className="font-bold text-sm text-foreground transition-all hover:text-primary active:opacity-60 active:scale-95"
               >
                 Sair
               </button>
@@ -68,7 +68,7 @@ export function Header() {
             <>
               <Link
                 href="/entrar"
-                className="font-bold text-sm text-foreground transition-colors hover:text-primary"
+                className="font-bold text-sm text-foreground transition-all hover:text-primary active:opacity-60 active:scale-95"
               >
                 Entrar
               </Link>

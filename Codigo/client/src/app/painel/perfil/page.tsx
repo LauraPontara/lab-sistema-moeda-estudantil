@@ -403,14 +403,14 @@ function DangerZone() {
               type="button"
               onClick={handleDelete}
               disabled={isDeleting}
-              className="rounded-full border-[3px] border-border bg-destructive px-5 py-2 font-display text-sm font-extrabold uppercase tracking-wide text-destructive-foreground shadow-[3px_3px_0_0_hsl(var(--border))] transition-all hover:brightness-95 active:shadow-none disabled:opacity-60"
+              className="rounded-full border-[3px] border-border bg-destructive px-5 py-2 font-display text-sm font-extrabold uppercase tracking-wide text-destructive-foreground shadow-[3px_3px_0_0_hsl(var(--border))] transition-all hover:brightness-95 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-60"
             >
               {isDeleting ? "Excluindo..." : "Sim, excluir"}
             </button>
             <button
               type="button"
               onClick={() => setStep("idle")}
-              className="rounded-full border-[3px] border-border bg-surface px-5 py-2 font-display text-sm font-extrabold uppercase tracking-wide text-foreground shadow-[3px_3px_0_0_hsl(var(--border))] transition-all hover:bg-muted active:shadow-none"
+              className="rounded-full border-[3px] border-border bg-surface px-5 py-2 font-display text-sm font-extrabold uppercase tracking-wide text-foreground shadow-[3px_3px_0_0_hsl(var(--border))] transition-all hover:bg-muted active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
             >
               Cancelar
             </button>

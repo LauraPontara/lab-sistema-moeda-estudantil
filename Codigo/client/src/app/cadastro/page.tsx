@@ -383,7 +383,7 @@ export default function CadastroPage() {
           <button
             type="button"
             onClick={() => setTab("student")}
-            className={`w-48 rounded-2xl border-[3px] border-border px-5 py-4 text-left shadow-[4px_4px_0_0_hsl(var(--border))] transition-all ${
+            className={`w-48 rounded-2xl border-[3px] border-border px-5 py-4 text-left shadow-[4px_4px_0_0_hsl(var(--border))] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${
               tab === "student"
                 ? "bg-primary text-primary-foreground"
                 : "bg-surface text-foreground hover:bg-muted"
@@ -397,7 +397,7 @@ export default function CadastroPage() {
           <button
             type="button"
             onClick={() => setTab("company")}
-            className={`w-48 rounded-2xl border-[3px] border-border px-5 py-4 text-left shadow-[4px_4px_0_0_hsl(var(--border))] transition-all ${
+            className={`w-48 rounded-2xl border-[3px] border-border px-5 py-4 text-left shadow-[4px_4px_0_0_hsl(var(--border))] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${
               tab === "company"
                 ? "bg-primary text-primary-foreground"
                 : "bg-surface text-foreground hover:bg-muted"

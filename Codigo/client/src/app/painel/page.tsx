@@ -37,23 +37,6 @@ export default function PainelPage() {
           <p className="mt-1 text-xs text-muted-foreground">moedas disponíveis</p>
         </div>
 
-        {/* Info card */}
-        {isStudent && (
-          <div className="rounded-2xl border-[3px] border-border bg-surface p-6 shadow-[4px_4px_0_0_hsl(var(--border))]">
-            <p className="font-display text-sm font-extrabold uppercase tracking-wide text-muted-foreground">
-              Meu perfil
-            </p>
-            <p className="mt-3 text-sm text-foreground">
-              Email: <span className="font-semibold">{user?.email}</span>
-            </p>
-            {profile && "course" in profile && (
-              <p className="mt-1 text-sm text-foreground">
-                Curso: <span className="font-semibold">{profile.course}</span>
-              </p>
-            )}
-          </div>
-        )}
-
         {isCompany && (
           <div className="rounded-2xl border-[3px] border-border bg-surface p-6 shadow-[4px_4px_0_0_hsl(var(--border))]">
             <p className="font-display text-sm font-extrabold uppercase tracking-wide text-muted-foreground">
