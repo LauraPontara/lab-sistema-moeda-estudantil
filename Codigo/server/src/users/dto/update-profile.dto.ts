@@ -37,6 +37,14 @@ export class UpdateProfileDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
+  @Matches(/^\d{8}$|^\d{5}-\d{3}$/, {
+    message: 'CEP deve ter 8 digitos ou formato 00000-000.',
+  })
+  cep?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(120)
   course?: string;
 

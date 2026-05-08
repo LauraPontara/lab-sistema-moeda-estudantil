@@ -52,6 +52,7 @@ export const studentProfiles = pgTable('student_profiles', {
   cpf: varchar('cpf', { length: 14 }).notNull().unique(),
   rg: varchar('rg', { length: 30 }).notNull(),
   address: text('address').notNull(),
+  cep: varchar('cep', { length: 9 }).notNull(),
   course: varchar('course', { length: 120 }).notNull(),
   institutionId: uuid('institution_id')
     .notNull()

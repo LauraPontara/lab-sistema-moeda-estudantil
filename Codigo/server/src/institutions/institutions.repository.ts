@@ -5,6 +5,7 @@ import { DATABASE_CONNECTION } from '../database/database.constants';
 import { institutions } from '../database/schemas';
 import * as schema from '../database/schemas';
 import { CreateInstitutionDto } from './dto/create-institution.dto';
+import { UpdateInstitutionDto } from './dto/update-institution.dto';
 
 type Database = PostgresJsDatabase<typeof schema>;
 
@@ -32,5 +33,24 @@ export class InstitutionsRepository {
       .values(dto)
       .returning();
     return institution;
+  }
+
+  async update(id: string, dto: UpdateInstitutionDto) {
+    const [institution] = await this.db
+      .update(institutions)
+      .set({ ...dto, updatedAt: new Date() })
+      .where(eq(institutions.id, id))
+      .returning();
+
+    return institution ?? null;
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const deleted = await this.db
+      .delete(institutions)
+      .where(eq(institutions.id, id))
+      .returning({ id: institutions.id });
+
+    return deleted.length > 0;
   }
 }

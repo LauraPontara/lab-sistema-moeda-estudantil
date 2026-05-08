@@ -8,6 +8,7 @@ export interface UserProfileModel extends BaseUserModel {
   documentType?: DocumentType;
   rg?: string;
   address?: string;
+  cep?: string;
   course?: string;
   department?: string;
   institutionId?: string;

@@ -38,6 +38,13 @@ export class CreateStudentDto {
   @IsNotEmpty()
   address!: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @Matches(/^\d{8}$|^\d{5}-\d{3}$/, {
+    message: 'CEP deve ter 8 digitos ou formato 00000-000.',
+  })
+  cep!: string;
+
   @IsUUID()
   institutionId!: string;
 

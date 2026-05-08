@@ -12,6 +12,7 @@ type UserWithStudentProfile = {
     cpf: string;
     rg: string;
     address: string;
+    cep: string;
     course: string;
     institutionId: string;
   };
@@ -63,6 +64,7 @@ export class UserMapper {
       cpf: row.profile.cpf,
       rg: row.profile.rg,
       address: row.profile.address,
+      cep: row.profile.cep,
       course: row.profile.course,
       institutionId: row.profile.institutionId,
     };
@@ -107,6 +109,7 @@ export class UserMapper {
       documentType: 'CPF',
       rg: row.profile.rg,
       address: row.profile.address,
+      cep: row.profile.cep,
       course: row.profile.course,
       institutionId: row.profile.institutionId,
     };
