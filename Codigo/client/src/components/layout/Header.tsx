@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { CoinIcon } from "@/components/ui/CoinIcon";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { ToonButton } from "@/components/ui/ToonButton";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { useAuth } from "@/context/AuthContext";
@@ -25,14 +25,10 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b-[3px] border-border bg-background/95 backdrop-blur-sm shadow-[0_2px_0_0_hsl(var(--border))]">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 sm:px-8 lg:px-16">
         <Link href="/" className="flex items-center gap-2.5 select-none">
-          <CoinIcon className="h-8 w-8" />
-          <span className="font-display text-xl font-extrabold leading-none">
-            <span className="text-foreground">XP </span>
-            <span className="text-primary">Estudantil</span>
-          </span>
+          <BrandLogo imageClassName="h-12 w-auto" />
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Menu principal">
+        <nav className="hidden items-center gap-8 lg:flex" aria-label="Menu principal">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -45,7 +41,7 @@ export function Header() {
         </nav>
 
         {/* Desktop right actions */}
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-3 lg:flex">
           <AnimatedThemeToggler
             variant="circle"
             className="flex h-9 w-9 items-center justify-center rounded-full border-[3px] border-border bg-surface shadow-[2px_2px_0_0_hsl(var(--border))] transition-all hover:bg-muted active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
@@ -53,7 +49,7 @@ export function Header() {
 
           {isLoggedIn ? (
             <>
-              <ToonButton variant="dark" size="sm" href="/painel">
+              <ToonButton variant="outline" size="sm" href="/painel">
                 Meu painel
               </ToonButton>
               <button
@@ -85,7 +81,7 @@ export function Header() {
           aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((v) => !v)}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-[3px] border-border bg-surface shadow-toon-sm transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none md:hidden"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-[3px] border-border bg-surface shadow-toon-sm transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none lg:hidden"
         >
           {menuOpen ? (
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
@@ -101,7 +97,7 @@ export function Header() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="border-t-[3px] border-border bg-background/98 md:hidden">
+        <div className="border-t-[3px] border-border bg-background/98 lg:hidden">
           <nav className="flex flex-col px-5 py-4" aria-label="Menu mobile">
             {navLinks.map((link) => (
               <Link

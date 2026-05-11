@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CoinIcon } from "@/components/ui/CoinIcon";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { useAuth } from "@/context/AuthContext";
 
 const schema = z.object({
@@ -57,11 +57,7 @@ export default function LoginPage() {
       {/* Header */}
       <header className="border-b-[3px] border-border bg-background px-6 py-3">
         <Link href="/" className="flex items-center gap-2.5 select-none w-fit">
-          <CoinIcon className="h-8 w-8" />
-          <span className="font-display text-xl font-extrabold leading-none">
-            <span className="text-foreground">XP </span>
-            <span className="text-primary">Estudantil</span>
-          </span>
+          <BrandLogo imageClassName="h-12 w-auto" />
         </Link>
       </header>
 
