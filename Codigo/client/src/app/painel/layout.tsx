@@ -63,7 +63,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, profile, isLoading } = useAuth();
+  const { user, profile, isLoading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -135,6 +135,13 @@ export default function DashboardLayout({
             variant="circle"
             className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
           />
+          <button
+            type="button"
+            onClick={logout}
+            className="flex w-full items-center justify-center rounded-xl border-[3px] border-border bg-surface px-3 py-2.5 font-display text-sm font-extrabold uppercase tracking-wide text-foreground shadow-[3px_3px_0_0_hsl(var(--border))] transition-all hover:bg-muted active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+          >
+            Sair
+          </button>
         </div>
       </aside>
 

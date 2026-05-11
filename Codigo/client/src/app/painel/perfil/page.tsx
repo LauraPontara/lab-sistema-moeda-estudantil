@@ -156,7 +156,7 @@ function StudentForm({
 }: {
   profile: StudentProfile;
   institutions: Institution[];
-  onSaved: () => void;
+  onSaved: () => Promise<void>;
 }) {
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
@@ -164,6 +164,7 @@ function StudentForm({
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<StudentData>({
     resolver: zodResolver(studentSchema),
@@ -178,6 +179,18 @@ function StudentForm({
     },
   });
 
+  useEffect(() => {
+    reset({
+      displayName: profile.displayName ?? "",
+      document: profile.document ?? "",
+      rg: profile.rg ?? "",
+      address: profile.address ?? "",
+      cep: profile.cep ?? "",
+      course: profile.course ?? "",
+      institutionId: profile.institutionId ?? "",
+    });
+  }, [profile, reset]);
+
   const fillAddressByCep = async (cep: string) => {
     const address = await findAddressByCep(cep);
 
@@ -185,6 +198,18 @@ function StudentForm({
       setValue("address", address, { shouldDirty: true, shouldValidate: true });
     }
   };
+
+  const institutionOptions = useMemo(
+    () => [
+      { key: "empty-institution", value: "", label: "Selecione..." },
+      ...institutions.map((institution, index) => ({
+        key: `institution-${institution.id || institution.name || "empty"}-${index}`,
+        value: institution.id,
+        label: institution.name,
+      })),
+    ],
+    [institutions],
+  );
 
   const onSubmit = async (data: StudentData) => {
     setToast(null);
@@ -198,8 +223,8 @@ function StudentForm({
         course: data.course || undefined,
         institutionId: data.institutionId || undefined,
       });
+      await onSaved();
       setToast({ msg: "Perfil atualizado com sucesso!", type: "success" });
-      onSaved();
     } catch (err: unknown) {
       const raw = (
         err as { response?: { data?: { message?: string | string[] } } }
@@ -278,11 +303,15 @@ function StudentForm({
           />
         </Field>
         <Field name="Instituição">
-          <select {...register("institutionId")} className={field}>
-            <option value="">Selecione...</option>
-            {institutions.map((i) => (
-              <option key={i.id} value={i.id}>
-                {i.name}
+          <select
+            {...register("institutionId")}
+            key={`${profile.institutionId ?? "empty"}-${institutions.length}`}
+            defaultValue={profile.institutionId ?? ""}
+            className={field}
+          >
+            {institutionOptions.map((option) => (
+              <option key={option.key} value={option.value}>
+                {option.label}
               </option>
             ))}
           </select>
@@ -323,7 +352,7 @@ function CompanyForm({
   onSaved,
 }: {
   profile: PartnerCompanyProfile;
-  onSaved: () => void;
+  onSaved: () => Promise<void>;
 }) {
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
@@ -351,8 +380,8 @@ function CompanyForm({
         address: data.address || undefined,
         contactPhone: data.contactPhone || undefined,
       });
+      await onSaved();
       setToast({ msg: "Perfil atualizado com sucesso!", type: "success" });
-      onSaved();
     } catch (err: unknown) {
       const raw = (
         err as { response?: { data?: { message?: string | string[] } } }
@@ -443,7 +472,7 @@ function ProfessorForm({
 }: {
   profile: ProfessorProfile;
   institutions: Institution[];
-  onSaved: () => void;
+  onSaved: () => Promise<void>;
 }) {
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
 
@@ -451,6 +480,7 @@ function ProfessorForm({
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<ProfessorData>({
     resolver: zodResolver(professorSchema),
@@ -462,6 +492,27 @@ function ProfessorForm({
     },
   });
 
+  useEffect(() => {
+    reset({
+      displayName: profile.displayName ?? "",
+      document: profile.document ?? "",
+      department: profile.department ?? "",
+      institutionId: profile.institutionId ?? "",
+    });
+  }, [profile, reset]);
+
+  const institutionOptions = useMemo(
+    () => [
+      { key: "empty-institution", value: "", label: "Selecione..." },
+      ...institutions.map((institution, index) => ({
+        key: `institution-${institution.id || institution.name || "empty"}-${index}`,
+        value: institution.id,
+        label: institution.name,
+      })),
+    ],
+    [institutions],
+  );
+
   const onSubmit = async (data: ProfessorData) => {
     setToast(null);
     try {
@@ -471,8 +522,8 @@ function ProfessorForm({
         department: data.department || undefined,
         institutionId: data.institutionId || undefined,
       });
+      await onSaved();
       setToast({ msg: "Perfil atualizado com sucesso!", type: "success" });
-      onSaved();
     } catch (err: unknown) {
       const raw = (
         err as { response?: { data?: { message?: string | string[] } } }
@@ -522,11 +573,15 @@ function ProfessorForm({
       </div>
 
       <Field name="Instituição">
-        <select {...register("institutionId")} className={field}>
-          <option value="">Selecione...</option>
-          {institutions.map((i) => (
-            <option key={i.id} value={i.id}>
-              {i.name}
+        <select
+          {...register("institutionId")}
+          key={`${profile.institutionId ?? "empty"}-${institutions.length}`}
+          defaultValue={profile.institutionId ?? ""}
+          className={field}
+        >
+          {institutionOptions.map((option) => (
+            <option key={option.key} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>
