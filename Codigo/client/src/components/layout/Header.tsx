@@ -49,7 +49,7 @@ export function Header() {
 
           {isLoggedIn ? (
             <>
-              <ToonButton variant="dark" size="sm" href="/painel">
+              <ToonButton variant="outline" size="sm" href="/painel">
                 Meu painel
               </ToonButton>
               <button
