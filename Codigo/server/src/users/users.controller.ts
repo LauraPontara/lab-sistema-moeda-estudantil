@@ -40,6 +40,14 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('users/me/profile')
+  getMyProfile(
+    @CurrentUser() currentUser: JwtPayload,
+  ): Promise<UserProfileModel> {
+    return this.usersService.getProfile(currentUser.sub, currentUser.role);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('users/:id')
   findById(@Param('id') id: string): Promise<UserModel> {
     return this.usersService.findById(id);
@@ -65,6 +73,13 @@ export class UsersController {
       currentUser.role,
       dto,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('users/me')
+  @HttpCode(204)
+  async deleteMe(@CurrentUser() currentUser: JwtPayload): Promise<void> {
+    await this.usersService.delete(currentUser.sub);
   }
 
   @UseGuards(JwtAuthGuard)
