@@ -11,7 +11,10 @@ import {
 } from '@nestjs/common';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 import type { JwtPayload } from '../auth/jwt-payload.interface';
+import { UserRole } from '../database/schemas';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { CreatePartnerCompanyDto } from './dto/create-partner-company.dto';
 import { CreateProfessorDto } from './dto/create-professor.dto';
@@ -110,25 +113,29 @@ export class UsersController {
     return this.usersService.findPartnerCompanies();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Post('professors')
   createProfessor(@Body() dto: CreateProfessorDto): Promise<ProfessorModel> {
     return this.usersService.createProfessor(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Get('professors')
   findProfessors(): Promise<ProfessorModel[]> {
     return this.usersService.findProfessors();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Post('admins')
   createAdmin(@Body() dto: CreateAdminDto): Promise<AdministratorModel> {
     return this.usersService.createAdmin(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Get('admins')
   findAdmins(): Promise<AdministratorModel[]> {
     return this.usersService.findAdministrators();

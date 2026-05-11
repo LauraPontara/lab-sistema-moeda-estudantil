@@ -5,6 +5,7 @@ export interface StudentModel extends BaseUserModel {
   cpf: string;
   rg: string;
   address: string;
+  cep: string;
   course: string;
   institutionId: string;
 }

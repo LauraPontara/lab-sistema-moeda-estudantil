@@ -178,6 +178,7 @@ export class UsersRepository {
           cpf: dto.cpf,
           rg: dto.rg,
           address: dto.address,
+          cep: dto.cep,
           course: dto.course,
           institutionId: dto.institutionId,
         })
@@ -292,6 +293,7 @@ export class UsersRepository {
     if (dto.document !== undefined) updates.cpf = dto.document;
     if (dto.rg !== undefined) updates.rg = dto.rg;
     if (dto.address !== undefined) updates.address = dto.address;
+    if (dto.cep !== undefined) updates.cep = dto.cep;
     if (dto.course !== undefined) updates.course = dto.course;
     if (dto.institutionId !== undefined) {
       updates.institutionId = dto.institutionId;

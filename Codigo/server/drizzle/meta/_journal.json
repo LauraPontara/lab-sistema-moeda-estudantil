@@ -15,6 +15,13 @@
       "when": 1777847625562,
       "tag": "0001_confused_punisher",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778208000000,
+      "tag": "0002_late_paper_doll",
+      "breakpoints": true
     }
   ]
 }
