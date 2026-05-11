@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { CoinIcon } from "@/components/ui/CoinIcon";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { useEffect } from "react";
@@ -94,11 +95,7 @@ export default function DashboardLayout({
         {/* Logo */}
         <div className="border-b-[3px] border-border px-5 py-4">
           <Link href="/" className="flex items-center gap-2 select-none">
-            <CoinIcon className="h-7 w-7" />
-            <span className="font-display text-lg font-extrabold leading-none">
-              <span className="text-foreground">XP </span>
-              <span className="text-primary">Estudantil</span>
-            </span>
+            <BrandLogo imageClassName="h-11 w-auto" />
           </Link>
         </div>
 

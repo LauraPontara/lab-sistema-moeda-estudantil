@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 const systemLinks = [
   { label: "Como funciona", href: "#como-funciona" },
@@ -13,9 +14,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-16 md:py-16">
         <div className="grid gap-10 md:grid-cols-[1fr_auto_auto] md:gap-16">
           <div>
-            <h3 className="font-display text-2xl font-extrabold text-white">
-              XP Estudantil
-            </h3>
+            <BrandLogo imageClassName="h-14 w-auto" />
             <p className="mt-2 max-w-xs text-sm leading-relaxed text-white/80">
               A moeda do mérito. Reconheça, conquiste, troque.
             </p>

@@ -6,13 +6,21 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CoinIcon } from "@/components/ui/CoinIcon";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import {
   getInstitutions,
   createStudent,
   createPartnerCompany,
   type Institution,
 } from "@/lib/api";
+import {
+  findAddressByCep,
+  maskCep,
+  maskCnpj,
+  maskCpf,
+  maskPhone,
+  maskRg,
+} from "@/lib/masks";
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 
@@ -73,8 +81,17 @@ function StudentForm({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<StudentData>({ resolver: zodResolver(studentSchema) });
+
+  const fillAddressByCep = async (cep: string) => {
+    const address = await findAddressByCep(cep);
+
+    if (address) {
+      setValue("address", address, { shouldDirty: true, shouldValidate: true });
+    }
+  };
 
   const onSubmit = async (data: StudentData) => {
     setServerError("");
@@ -122,6 +139,12 @@ function StudentForm({
           <label className={labelClass}>CPF</label>
           <input
             {...register("cpf")}
+            onChange={(event) =>
+              setValue("cpf", maskCpf(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
             className={inputClass}
             placeholder="000.000.000-00"
           />
@@ -136,7 +159,17 @@ function StudentForm({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={labelClass}>RG</label>
-          <input {...register("rg")} className={inputClass} placeholder="RG" />
+          <input
+            {...register("rg")}
+            onChange={(event) =>
+              setValue("rg", maskRg(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            className={inputClass}
+            placeholder="MG 12.345.678-9"
+          />
           {errors.rg && (
             <p className="mt-1 text-xs text-destructive">{errors.rg.message}</p>
           )}
@@ -145,6 +178,13 @@ function StudentForm({
           <label className={labelClass}>CEP</label>
           <input
             {...register("cep")}
+            onChange={(event) =>
+              setValue("cep", maskCep(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            onBlur={(event) => void fillAddressByCep(event.target.value)}
             className={inputClass}
             placeholder="00000-000"
           />
@@ -241,6 +281,7 @@ function CompanyForm({ onSuccess }: { onSuccess: () => void }) {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CompanyData>({ resolver: zodResolver(companySchema) });
 
@@ -292,6 +333,12 @@ function CompanyForm({ onSuccess }: { onSuccess: () => void }) {
           <label className={labelClass}>CNPJ</label>
           <input
             {...register("cnpj")}
+            onChange={(event) =>
+              setValue("cnpj", maskCnpj(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
             className={inputClass}
             placeholder="00.000.000/0000-00"
           />
@@ -321,6 +368,12 @@ function CompanyForm({ onSuccess }: { onSuccess: () => void }) {
           <label className={labelClass}>Telefone (opcional)</label>
           <input
             {...register("contactPhone")}
+            onChange={(event) =>
+              setValue("contactPhone", maskPhone(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
             className={inputClass}
             placeholder="(00) 00000-0000"
           />
@@ -381,11 +434,7 @@ export default function CadastroPage() {
       {/* Header */}
       <header className="border-b-[3px] border-border bg-background px-6 py-3">
         <Link href="/" className="flex items-center gap-2.5 select-none w-fit">
-          <CoinIcon className="h-8 w-8" />
-          <span className="font-display text-xl font-extrabold leading-none">
-            <span className="text-foreground">XP </span>
-            <span className="text-primary">Estudantil</span>
-          </span>
+          <BrandLogo imageClassName="h-12 w-auto" />
         </Link>
       </header>
 

@@ -14,6 +14,14 @@ import {
   type PartnerCompanyProfile,
   type ProfessorProfile,
 } from "@/lib/api";
+import {
+  findAddressByCep,
+  maskCep,
+  maskCnpj,
+  maskCpf,
+  maskPhone,
+  maskRg,
+} from "@/lib/masks";
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
 
@@ -155,6 +163,7 @@ function StudentForm({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<StudentData>({
     resolver: zodResolver(studentSchema),
@@ -168,6 +177,14 @@ function StudentForm({
       institutionId: profile.institutionId ?? "",
     },
   });
+
+  const fillAddressByCep = async (cep: string) => {
+    const address = await findAddressByCep(cep);
+
+    if (address) {
+      setValue("address", address, { shouldDirty: true, shouldValidate: true });
+    }
+  };
 
   const onSubmit = async (data: StudentData) => {
     setToast(null);
@@ -212,12 +229,28 @@ function StudentForm({
         <Field name="CPF" error={errors.document?.message}>
           <input
             {...register("document")}
+            onChange={(event) =>
+              setValue("document", maskCpf(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
             className={field}
             placeholder="000.000.000-00"
           />
         </Field>
         <Field name="RG">
-          <input {...register("rg")} className={field} placeholder="RG" />
+          <input
+            {...register("rg")}
+            onChange={(event) =>
+              setValue("rg", maskRg(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            className={field}
+            placeholder="MG 12.345.678-9"
+          />
         </Field>
       </div>
 
@@ -233,6 +266,13 @@ function StudentForm({
         <Field name="CEP" error={errors.cep?.message}>
           <input
             {...register("cep")}
+            onChange={(event) =>
+              setValue("cep", maskCep(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            onBlur={(event) => void fillAddressByCep(event.target.value)}
             className={field}
             placeholder="00000-000"
           />
@@ -290,6 +330,7 @@ function CompanyForm({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<CompanyData>({
     resolver: zodResolver(companySchema),
@@ -341,6 +382,12 @@ function CompanyForm({
         <Field name="CNPJ" error={errors.document?.message}>
           <input
             {...register("document")}
+            onChange={(event) =>
+              setValue("document", maskCnpj(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
             className={field}
             placeholder="00.000.000/0000-00"
           />
@@ -348,6 +395,12 @@ function CompanyForm({
         <Field name="Telefone">
           <input
             {...register("contactPhone")}
+            onChange={(event) =>
+              setValue("contactPhone", maskPhone(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
             className={field}
             placeholder="(00) 00000-0000"
           />
@@ -397,6 +450,7 @@ function ProfessorForm({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<ProfessorData>({
     resolver: zodResolver(professorSchema),
@@ -448,6 +502,12 @@ function ProfessorForm({
         <Field name="CPF" error={errors.document?.message}>
           <input
             {...register("document")}
+            onChange={(event) =>
+              setValue("document", maskCpf(event.target.value), {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
             className={field}
             placeholder="000.000.000-00"
           />
