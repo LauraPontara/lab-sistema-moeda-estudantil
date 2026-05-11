@@ -12,7 +12,7 @@ export function BrandLogo({
   return (
     <span className={`inline-flex items-center ${className}`}>
       <Image
-        src="/logo.jpg"
+        src="/logo.png"
         alt="XP Estudantil"
         width={160}
         height={48}
