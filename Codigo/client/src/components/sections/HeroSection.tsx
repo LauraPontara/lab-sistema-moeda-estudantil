@@ -7,24 +7,6 @@ export function HeroSection() {
     <section className="relative overflow-hidden bg-background py-20 md:py-28 lg:min-h-[600px] lg:flex lg:items-center">
       <DecorativeSymbols />
 
-      <div className="hidden lg:block absolute left-0 bottom-0 w-72 h-72 z-10 pointer-events-none">
-        <Image
-          src="/images/mascot-red.png"
-          alt="Mascote vermelho"
-          fill
-          className="object-contain object-bottom animate-float-slow"
-        />
-      </div>
-
-      <div className="hidden lg:block absolute right-0 bottom-0 w-72 h-72 z-10 pointer-events-none">
-        <Image
-          src="/images/mascot-blue.png"
-          alt="Mascote azul"
-          fill
-          className="object-contain object-bottom animate-float-slow [animation-delay:1.2s]"
-        />
-      </div>
-
       <div className="relative z-20 mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-16">
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
           <span className="inline-flex items-center rounded-full border-[3px] border-foreground bg-foreground px-4 py-1 shadow-toon-sm">
