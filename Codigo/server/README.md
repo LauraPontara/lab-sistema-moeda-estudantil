@@ -1,98 +1,88 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend - Sistema de Moeda Estudantil
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API NestJS da Sprint 02, focada no servico de usuarios, autenticação JWT e persistencia no Supabase PostgreSQL com Drizzle ORM.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Stack
 
-## Description
+- NestJS 11
+- Drizzle ORM
+- Supabase PostgreSQL
+- JWT com Passport
+- bcrypt para hash de senha
+- class-validator para validacao de DTOs
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Variaveis de ambiente
 
-## Project setup
+Crie um `.env` a partir de `.env.example`.
 
-```bash
-$ npm install
+```env
+PORT=3001
+DATABASE_URL="postgresql://postgres:senha@host:6543/postgres"
+JWT_SECRET="troque-esta-chave"
+JWT_EXPIRES_IN="1d"
+SUPABASE_URL="https://seu-projeto.supabase.co"
+SUPABASE_PUBLISHABLE_KEY="sb_publishable_xxx"
 ```
 
-## Compile and run the project
+O backend usa o Supabase como banco PostgreSQL via `DATABASE_URL`. A conexao usa `prepare: false`, necessario para o pooler do Supabase na porta `6543`.
+
+## Comandos
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
+npm run build
+npm run start:dev
+npm run db:generate
+npm run db:migrate
+npm run db:studio
+npm test -- --runInBand
 ```
 
-## Run tests
+## Endpoints principais
 
-```bash
-# unit tests
-$ npm run test
+Todos os endpoints usam o prefixo `/api`.
 
-# e2e tests
-$ npm run test:e2e
+### Autenticacao
 
-# test coverage
-$ npm run test:cov
-```
+- `POST /api/auth/login`
+- `GET /api/auth/me` com Bearer token
 
-## Deployment
+### Alunos
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- `POST /api/students`
+- `GET /api/students` com Bearer token
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Empresas parceiras
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+- `POST /api/partner-companies`
+- `GET /api/partner-companies` com Bearer token
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Usuarios gerais
 
-## Resources
+- `GET /api/users` com Bearer token
+- `GET /api/users/:id` com Bearer token
+- `PATCH /api/users/:id` com Bearer token
+- `DELETE /api/users/:id` com Bearer token
 
-Check out a few resources that may come in handy when working with NestJS:
+### Complementares
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- `POST /api/professors` com Bearer token
+- `GET /api/professors` com Bearer token
+- `POST /api/admins` com Bearer token
+- `GET /api/admins` com Bearer token
+- `GET /api/institutions`
+- `GET /api/institutions/:id`
+- `POST /api/institutions` com Bearer token
 
-## Support
+## Modelo de dados inicial
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+A migration inicial cria:
 
-## Stay in touch
+- `users`
+- `institutions`
+- `student_profiles`
+- `partner_company_profiles`
+- `professor_profiles`
+- `administrator_profiles`
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+O saldo inicial do professor e criado com 1000 moedas. Alunos, empresas e administradores começam com saldo 0.
