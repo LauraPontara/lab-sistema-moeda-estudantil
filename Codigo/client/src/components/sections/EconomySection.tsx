@@ -38,13 +38,13 @@ export function EconomySection() {
             </ul>
           </div>
 
-          <div className="flex justify-center">
-            <div className="relative w-full max-w-sm aspect-square md:max-w-full md:aspect-[4/3] drop-shadow-[0_20px_13px_rgba(0,0,0,0.03)]">
+          <div className="flex justify-center items-center">
+            <div className="relative w-full h-full min-h-[280px] drop-shadow-[0_20px_13px_rgba(0,0,0,0.03)]">
               <Image
                 src="/images/mascot-professor.png"
                 alt="Professor mascote distribuindo moedas"
                 fill
-                className="object-contain"
+                className="object-contain scale-[1.35] origin-center"
               />
             </div>
           </div>
