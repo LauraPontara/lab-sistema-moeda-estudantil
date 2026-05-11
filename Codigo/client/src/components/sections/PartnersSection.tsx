@@ -38,7 +38,7 @@ export function PartnersSection() {
               <span className="text-foreground">público estudantil.</span>
             </h2>
 
-            <p className="mt-2 text-base text-foreground/80 sm:text-lg leading-relaxed">
+            <p className="mt-2 text-base text-foreground/80 dark:text-black/80 sm:text-lg leading-relaxed">
               Cadastre as vantagens que quer oferecer. Defina o custo em moedas.
               Receba os cupons gerados pelo sistema e confira a troca presencial.
             </p>
