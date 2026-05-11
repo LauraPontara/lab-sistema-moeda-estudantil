@@ -25,6 +25,12 @@ const studentSchema = z.object({
     .regex(/^\d{11}$|^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "CPF inválido"),
   rg: z.string().min(1, "RG obrigatório"),
   address: z.string().min(1, "Endereço obrigatório"),
+  cep: z
+    .string()
+    .regex(
+      /^\d{8}$|^\d{5}-\d{3}$/,
+      "CEP deve ter 8 dígitos ou formato 00000-000"
+    ),
   institutionId: z.string().uuid("Selecione uma instituição"),
   course: z.string().min(1, "Curso obrigatório"),
 });
@@ -136,18 +142,32 @@ function StudentForm({
           )}
         </div>
         <div>
-          <label className={labelClass}>Endereço</label>
+          <label className={labelClass}>CEP</label>
           <input
-            {...register("address")}
+            {...register("cep")}
             className={inputClass}
-            placeholder="Rua, número, cidade"
+            placeholder="00000-000"
           />
-          {errors.address && (
+          {errors.cep && (
             <p className="mt-1 text-xs text-destructive">
-              {errors.address.message}
+              {errors.cep.message}
             </p>
           )}
         </div>
+      </div>
+
+      <div>
+        <label className={labelClass}>Endereço</label>
+        <input
+          {...register("address")}
+          className={inputClass}
+          placeholder="Rua, número, cidade"
+        />
+        {errors.address && (
+          <p className="mt-1 text-xs text-destructive">
+            {errors.address.message}
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">

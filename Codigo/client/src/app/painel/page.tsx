@@ -6,7 +6,6 @@ import { CoinIcon } from "@/components/ui/CoinIcon";
 export default function PainelPage() {
   const { user, profile } = useAuth();
 
-  const isStudent = user?.role === "STUDENT";
   const isCompany = user?.role === "PARTNER_COMPANY";
 
   const displayName =

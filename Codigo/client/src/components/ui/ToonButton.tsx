@@ -1,17 +1,20 @@
 import Link from "next/link";
 
 type ToonButtonProps = {
-  variant?: "primary" | "outline" | "dark";
+  variant?: "primary" | "secondary" | "outline" | "dark";
   size?: "sm" | "md" | "lg";
   href?: string;
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
   type?: "button" | "submit" | "reset";
 };
 
 const variantClasses: Record<NonNullable<ToonButtonProps["variant"]>, string> = {
   primary:
     "bg-primary text-primary-foreground border-border hover:brightness-95",
+  secondary:
+    "bg-secondary text-secondary-foreground border-border hover:brightness-95",
   outline:
     "bg-surface text-foreground border-border hover:bg-muted",
   dark:
@@ -30,6 +33,7 @@ export function ToonButton({
   href,
   children,
   className = "",
+  onClick,
   type = "button",
 }: ToonButtonProps) {
   const base =
@@ -39,14 +43,14 @@ export function ToonButton({
 
   if (href) {
     return (
-      <Link href={href} className={classes}>
+      <Link href={href} className={classes} onClick={onClick}>
         {children}
       </Link>
     );
   }
 
   return (
-    <button type={type} className={classes}>
+    <button type={type} className={classes} onClick={onClick}>
       {children}
     </button>
   );

@@ -36,6 +36,7 @@ export interface StudentProfile {
   documentType: "CPF";
   rg: string;
   address: string;
+  cep: string;
   course: string;
   institutionId: string;
 }
@@ -52,7 +53,22 @@ export interface PartnerCompanyProfile {
   contactPhone: string | null;
 }
 
-export type UserProfile = StudentProfile | PartnerCompanyProfile;
+export interface ProfessorProfile {
+  id: string;
+  email: string;
+  role: UserRole;
+  coinBalance: number;
+  displayName: string;
+  document: string;
+  documentType: "CPF";
+  department: string;
+  institutionId: string;
+}
+
+export type UserProfile =
+  | StudentProfile
+  | PartnerCompanyProfile
+  | ProfessorProfile;
 
 export interface Institution {
   id: string;
@@ -95,6 +111,7 @@ export async function createStudent(payload: {
   cpf: string;
   rg: string;
   address: string;
+  cep: string;
   institutionId: string;
   course: string;
 }) {
@@ -123,7 +140,9 @@ export async function updateMyProfile(payload: {
   document?: string;
   rg?: string;
   address?: string;
+  cep?: string;
   course?: string;
+  department?: string;
   institutionId?: string;
   contactPhone?: string;
 }) {
