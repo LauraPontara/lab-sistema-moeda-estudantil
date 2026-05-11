@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import {
   TOKEN_KEY,
   login as apiLogin,
+  getMe,
   getMyProfile,
   type AuthUser,
   type UserProfile,
@@ -39,25 +40,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const p = await getMyProfile();
       setProfile(p);
     } catch {
-      // ignore
+      setProfile(null);
     }
   }, []);
 
   useEffect(() => {
     const token = Cookies.get(TOKEN_KEY);
     if (!token) {
-      setIsLoading(false);
+      void Promise.resolve().then(() => setIsLoading(false));
       return;
     }
-    getMyProfile()
-      .then((p) => {
-        setProfile(p);
-        setUser({
-          id: p.id,
-          email: p.email,
-          role: p.role,
-          coinBalance: p.coinBalance,
-        });
+    getMe()
+      .then(async (me) => {
+        setUser(me);
+        try {
+          const p = await getMyProfile();
+          setProfile(p);
+        } catch {
+          setProfile(null);
+        }
       })
       .catch(() => {
         Cookies.remove(TOKEN_KEY);
@@ -70,8 +71,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const res = await apiLogin(email, password);
       Cookies.set(TOKEN_KEY, res.accessToken, { expires: 1, sameSite: "Lax" });
       setUser(res.user);
-      const p = await getMyProfile();
-      setProfile(p);
+      try {
+        const p = await getMyProfile();
+        setProfile(p);
+      } catch {
+        setProfile(null);
+      }
       router.push("/painel");
     },
     [router]

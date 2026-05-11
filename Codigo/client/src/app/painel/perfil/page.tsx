@@ -12,6 +12,7 @@ import {
   type Institution,
   type StudentProfile,
   type PartnerCompanyProfile,
+  type ProfessorProfile,
 } from "@/lib/api";
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
@@ -126,6 +127,14 @@ const studentSchema = z.object({
     .or(z.literal("")),
   rg: z.string().optional(),
   address: z.string().optional(),
+  cep: z
+    .string()
+    .regex(
+      /^\d{8}$|^\d{5}-\d{3}$/,
+      "CEP deve ter 8 dígitos ou formato 00000-000"
+    )
+    .optional()
+    .or(z.literal("")),
   course: z.string().optional(),
   institutionId: z.string().optional().or(z.literal("")),
 });
@@ -154,6 +163,7 @@ function StudentForm({
       document: profile.document ?? "",
       rg: profile.rg ?? "",
       address: profile.address ?? "",
+      cep: profile.cep ?? "",
       course: profile.course ?? "",
       institutionId: profile.institutionId ?? "",
     },
@@ -167,6 +177,7 @@ function StudentForm({
         document: data.document || undefined,
         rg: data.rg || undefined,
         address: data.address || undefined,
+        cep: data.cep || undefined,
         course: data.course || undefined,
         institutionId: data.institutionId || undefined,
       });
@@ -219,6 +230,13 @@ function StudentForm({
       </Field>
 
       <div className="grid grid-cols-2 gap-4">
+        <Field name="CEP" error={errors.cep?.message}>
+          <input
+            {...register("cep")}
+            className={field}
+            placeholder="00000-000"
+          />
+        </Field>
         <Field name="Instituição">
           <select {...register("institutionId")} className={field}>
             <option value="">Selecione...</option>
@@ -229,14 +247,15 @@ function StudentForm({
             ))}
           </select>
         </Field>
-        <Field name="Curso">
-          <input
-            {...register("course")}
-            className={field}
-            placeholder="Ex: Eng. de Software"
-          />
-        </Field>
       </div>
+
+      <Field name="Curso">
+        <input
+          {...register("course")}
+          className={field}
+          placeholder="Ex: Eng. de Software"
+        />
+      </Field>
 
       {toast && <Toast msg={toast.msg} type={toast.type} />}
       <SaveButton isSubmitting={isSubmitting} isDirty={isDirty} />
@@ -349,6 +368,116 @@ function CompanyForm({
   );
 }
 
+// ── Professor Profile Form ───────────────────────────────────────────────────
+
+const professorSchema = z.object({
+  displayName: z.string().min(2, "Nome obrigatório"),
+  document: z
+    .string()
+    .regex(/^\d{11}$|^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "CPF inválido")
+    .optional()
+    .or(z.literal("")),
+  department: z.string().optional(),
+  institutionId: z.string().optional().or(z.literal("")),
+});
+
+type ProfessorData = z.infer<typeof professorSchema>;
+
+function ProfessorForm({
+  profile,
+  institutions,
+  onSaved,
+}: {
+  profile: ProfessorProfile;
+  institutions: Institution[];
+  onSaved: () => void;
+}) {
+  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty },
+  } = useForm<ProfessorData>({
+    resolver: zodResolver(professorSchema),
+    defaultValues: {
+      displayName: profile.displayName ?? "",
+      document: profile.document ?? "",
+      department: profile.department ?? "",
+      institutionId: profile.institutionId ?? "",
+    },
+  });
+
+  const onSubmit = async (data: ProfessorData) => {
+    setToast(null);
+    try {
+      await updateMyProfile({
+        displayName: data.displayName,
+        document: data.document || undefined,
+        department: data.department || undefined,
+        institutionId: data.institutionId || undefined,
+      });
+      setToast({ msg: "Perfil atualizado com sucesso!", type: "success" });
+      onSaved();
+    } catch (err: unknown) {
+      const raw = (
+        err as { response?: { data?: { message?: string | string[] } } }
+      )?.response?.data?.message;
+      setToast({
+        msg: Array.isArray(raw) ? raw.join(", ") : (raw ?? "Erro ao salvar."),
+        type: "error",
+      });
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <Field name="Nome" error={errors.displayName?.message}>
+        <input
+          {...register("displayName")}
+          className={field}
+          placeholder="Nome do professor"
+        />
+      </Field>
+
+      <Field name="Email">
+        <input value={profile.email} disabled className={fieldDisabled} />
+      </Field>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Field name="CPF" error={errors.document?.message}>
+          <input
+            {...register("document")}
+            className={field}
+            placeholder="000.000.000-00"
+          />
+        </Field>
+        <Field name="Departamento">
+          <input
+            {...register("department")}
+            className={field}
+            placeholder="Ex: Computação"
+          />
+        </Field>
+      </div>
+
+      <Field name="Instituição">
+        <select {...register("institutionId")} className={field}>
+          <option value="">Selecione...</option>
+          {institutions.map((i) => (
+            <option key={i.id} value={i.id}>
+              {i.name}
+            </option>
+          ))}
+        </select>
+      </Field>
+
+      {toast && <Toast msg={toast.msg} type={toast.type} />}
+      <SaveButton isSubmitting={isSubmitting} isDirty={isDirty} />
+    </form>
+  );
+}
+
 // ── Danger Zone ───────────────────────────────────────────────────────────────
 
 function DangerZone() {
@@ -433,6 +562,8 @@ export default function PerfilPage() {
 
   const isStudent = user?.role === "STUDENT";
   const isCompany = user?.role === "PARTNER_COMPANY";
+  const isProfessor = user?.role === "PROFESSOR";
+  const isAdmin = user?.role === "ADMIN";
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _institutionName = useMemo(() => {
@@ -453,8 +584,23 @@ export default function PerfilPage() {
 
       {/* Form card */}
       <div className="mt-6 max-w-2xl rounded-2xl border-[3px] border-border bg-surface p-6 shadow-[6px_6px_0_0_hsl(var(--border))]">
-        {!profile && (
+        {!profile && !isAdmin && (
           <p className="text-sm text-muted-foreground">Carregando perfil...</p>
+        )}
+
+        {isAdmin && (
+          <div className="space-y-4">
+            <Field name="Email">
+              <input
+                value={user?.email ?? ""}
+                disabled
+                className={fieldDisabled}
+              />
+            </Field>
+            <p className="text-sm text-muted-foreground">
+              Administradores nÃ£o possuem dados de perfil editÃ¡veis nesta API.
+            </p>
+          </div>
         )}
 
         {profile && isStudent && (
@@ -468,6 +614,14 @@ export default function PerfilPage() {
         {profile && isCompany && (
           <CompanyForm
             profile={profile as PartnerCompanyProfile}
+            onSaved={refreshProfile}
+          />
+        )}
+
+        {profile && isProfessor && (
+          <ProfessorForm
+            profile={profile as ProfessorProfile}
+            institutions={institutions}
             onSaved={refreshProfile}
           />
         )}
