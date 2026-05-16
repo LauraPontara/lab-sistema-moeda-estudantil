@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/context/AuthContext";
+import { Save, Trash2 } from "lucide-react";
 import {
   getInstitutions,
   updateMyProfile,
@@ -70,45 +71,6 @@ function Toast({ msg, type }: { msg: string; type: "success" | "error" }) {
   );
 }
 
-// ── Save icon ─────────────────────────────────────────────────────────────────
-
-function SaveIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-    >
-      <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
-      <polyline points="17 21 17 13 7 13 7 21" />
-      <polyline points="7 3 7 8 15 8" />
-    </svg>
-  );
-}
-
-// ── Trash icon ────────────────────────────────────────────────────────────────
-
-function TrashIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-    >
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
-      <path d="M10 11v6M14 11v6" />
-      <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
-    </svg>
-  );
-}
-
 // ── Submit button ─────────────────────────────────────────────────────────────
 
 function SaveButton({ isSubmitting, isDirty }: { isSubmitting: boolean; isDirty: boolean }) {
@@ -118,7 +80,7 @@ function SaveButton({ isSubmitting, isDirty }: { isSubmitting: boolean; isDirty:
       disabled={isSubmitting || !isDirty}
       className="mt-2 flex items-center gap-2 rounded-full border-[3px] border-border bg-primary px-6 py-2.5 font-display text-sm font-extrabold uppercase tracking-wide text-primary-foreground shadow-[4px_4px_0_0_hsl(var(--border))] transition-all hover:brightness-95 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
     >
-      <SaveIcon />
+      <Save className="h-4 w-4" />
       {isSubmitting ? "Salvando..." : "Salvar Alterações"}
     </button>
   );
@@ -634,7 +596,7 @@ function DangerZone() {
           onClick={() => setStep("confirm")}
           className="mt-4 flex items-center gap-2 rounded-full border-[3px] border-border bg-destructive px-5 py-2.5 font-display text-sm font-extrabold uppercase tracking-wide text-destructive-foreground shadow-[4px_4px_0_0_hsl(var(--border))] transition-all hover:brightness-95 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
         >
-          <TrashIcon />
+          <Trash2 className="h-4 w-4" />
           Excluir Minha Conta
         </button>
       ) : (
