@@ -24,12 +24,12 @@
 
 | ID | História de Usuário |
 |----|---------------------|
-| **US02** | Como **aluno**, quero **realizar meu cadastro no sistema informando nome, email, CPF, RG, endereço, instituição de ensino e curso**, para **poder participar do programa de mérito estudantil e receber moedas dos professores**. |
+| **US02** | Como **aluno**, quero **realizar meu cadastro no sistema informando nome, email, telefone, CPF, RG, endereço, instituição de ensino e curso**, para **poder participar do programa de mérito estudantil e receber moedas dos professores**. |
 | **US03** | Como **aluno**, quero **consultar o extrato da minha conta**, para **visualizar meu saldo atual de moedas e o histórico de recebimentos e trocas realizadas**. |
-| **US04** | Como **aluno**, quero **ser notificado por email ao receber moedas de um professor**, para **ser informado sobre o reconhecimento e o motivo pelo qual fui premiado**. |
+| **US04** | Como **aluno**, quero **ser notificado por Whatsapp ao receber moedas de um professor**, para **ser informado sobre o reconhecimento e o motivo pelo qual fui premiado**. |
 | **US05** | Como **aluno**, quero **visualizar a lista de vantagens disponíveis no sistema**, para **conhecer os produtos e descontos que posso resgatar com minhas moedas**. |
 | **US06** | Como **aluno**, quero **trocar minhas moedas por uma vantagem cadastrada**, para **obter descontos ou produtos oferecidos pelas empresas parceiras**. |
-| **US07** | Como **aluno**, quero **receber um email com cupom e código de resgate ao trocar moedas por uma vantagem**, para **utilizar o benefício presencialmente na empresa parceira**. |
+| **US07** | Como **aluno**, quero **receber uma mensagem pelo Whatsapp com cupom e código de resgate ao trocar moedas por uma vantagem**, para **utilizar o benefício presencialmente na empresa parceira**. |
 
 
 
@@ -50,7 +50,7 @@
 |----|---------------------|
 | **US12** | Como **empresa parceira**, quero **realizar meu cadastro no sistema**, para **poder oferecer vantagens aos alunos participantes do programa de mérito**. |
 | **US13** | Como **empresa parceira**, quero **cadastrar vantagens informando nome, descrição, foto e custo em moedas**, para **disponibilizar produtos e descontos aos alunos no catálogo do sistema**. |
-| **US14** | Como **empresa parceira**, quero **receber um email com o código de resgate quando um aluno trocar moedas por uma das minhas vantagens**, para **poder verificar e validar a troca no momento do atendimento presencial**. |
+| **US14** | Como **empresa parceira**, quero **receber uma mensagem pelo Whatsapp com o código de resgate quando um aluno trocar moedas por uma das minhas vantagens**, para **poder verificar e validar a troca no momento do atendimento presencial**. |
 
 
 
