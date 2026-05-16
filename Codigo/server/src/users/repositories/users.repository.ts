@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { and, eq, ne } from 'drizzle-orm';
+import { and, eq, ne, sql } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DATABASE_CONNECTION } from '../../database/database.constants';
 import {
@@ -437,5 +437,29 @@ export class UsersRepository {
       .where(where)
       .limit(1);
     return Boolean(user);
+  }
+
+  async countByInstitutionId(institutionId: string): Promise<number> {
+    const [profRow] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(professorProfiles)
+      .where(eq(professorProfiles.institutionId, institutionId));
+
+    const [studRow] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(studentProfiles)
+      .where(eq(studentProfiles.institutionId, institutionId));
+
+    return (profRow?.count ?? 0) + (studRow?.count ?? 0);
+  }
+
+  async updatePassword(
+    userId: string,
+    hashedPassword: string,
+  ): Promise<void> {
+    await this.db
+      .update(users)
+      .set({ passwordHash: hashedPassword, updatedAt: new Date() })
+      .where(eq(users.id, userId));
   }
 }

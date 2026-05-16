@@ -5,7 +5,6 @@ import {
   IsUUID,
   MaxLength,
   Matches,
-  MinLength,
 } from 'class-validator';
 
 export class CreateProfessorDto {
@@ -17,10 +16,6 @@ export class CreateProfessorDto {
   @IsEmail()
   @MaxLength(160)
   email!: string;
-
-  @IsString()
-  @MinLength(6)
-  password!: string;
 
   @IsString()
   @IsNotEmpty()

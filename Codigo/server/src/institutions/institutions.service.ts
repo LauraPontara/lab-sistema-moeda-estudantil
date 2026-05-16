@@ -1,12 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateInstitutionDto } from './dto/create-institution.dto';
 import { UpdateInstitutionDto } from './dto/update-institution.dto';
 import { InstitutionsRepository } from './institutions.repository';
+import { UsersRepository } from '../users/repositories/users.repository';
 
 @Injectable()
 export class InstitutionsService {
   constructor(
     private readonly institutionsRepository: InstitutionsRepository,
+    private readonly usersRepository: UsersRepository,
   ) {}
 
   findAll() {
@@ -38,6 +44,14 @@ export class InstitutionsService {
   }
 
   async delete(id: string): Promise<void> {
+    const linkedUsers = await this.usersRepository.countByInstitutionId(id);
+
+    if (linkedUsers > 0) {
+      throw new ConflictException(
+        'Não é possível excluir uma instituição com professores ou alunos vinculados.',
+      );
+    }
+
     const deleted = await this.institutionsRepository.delete(id);
 
     if (!deleted) {
