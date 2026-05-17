@@ -15,6 +15,7 @@ import {
   Building2,
   GraduationCap,
   Users,
+  Send,
 } from "lucide-react";
 
 const studentNav = [
@@ -27,6 +28,13 @@ const studentNav = [
 const companyNav = [
   { label: "Painel", href: "/painel", icon: LayoutDashboard },
   { label: "Minhas vantagens", href: "/painel/vantagens", icon: ArrowLeftRight },
+  { label: "Perfil", href: "/painel/perfil", icon: User },
+];
+
+const professorNav = [
+  { label: "Painel", href: "/painel", icon: LayoutDashboard },
+  { label: "Enviar moedas", href: "/painel/enviar-moedas", icon: Send },
+  { label: "Extrato", href: "/painel/extrato", icon: FileText },
   { label: "Perfil", href: "/painel/perfil", icon: User },
 ];
 
@@ -65,8 +73,11 @@ export default function DashboardLayout({
   const isStudent = user.role === "STUDENT";
   const isCompany = user.role === "PARTNER_COMPANY";
   const isAdmin = user.role === "ADMIN";
+  const isProfessor = user.role === "PROFESSOR";
   const navItems = isAdmin
     ? adminNav
+    : isProfessor
+    ? professorNav
     : isStudent
     ? studentNav
     : isCompany

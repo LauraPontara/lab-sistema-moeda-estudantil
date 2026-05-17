@@ -5,6 +5,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
@@ -92,6 +93,41 @@ export const administratorProfiles = pgTable('administrator_profiles', {
     .unique()
     .references(() => users.id, { onDelete: 'cascade' }),
 });
+
+export const coinTransfers = pgTable('coin_transfers', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  professorId: uuid('professor_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  studentId: uuid('student_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  amount: integer('amount').notNull(),
+  message: text('message').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const professorSemesterAllowances = pgTable(
+  'professor_semester_allowances',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    professorId: uuid('professor_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    semesterCode: varchar('semester_code', { length: 8 }).notNull(),
+    amount: integer('amount').notNull().default(1000),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    professorSemesterUnique: uniqueIndex(
+      'professor_semester_allowances_professor_semester_unique',
+    ).on(table.professorId, table.semesterCode),
+  }),
+);
 
 export const userRelations = relations(users, ({ one }) => ({
   studentProfile: one(studentProfiles),

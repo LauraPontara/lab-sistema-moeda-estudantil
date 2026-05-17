@@ -10,8 +10,12 @@ import { ROLES_KEY } from './roles.decorator';
 @Injectable()
 export class RolesGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles: string[] =
-      Reflect.getMetadata(ROLES_KEY, context.getHandler()) ?? [];
+    const metadata = Reflect.getMetadata(ROLES_KEY, context.getHandler()) as
+      | unknown[]
+      | undefined;
+    const requiredRoles = (metadata ?? []).filter(
+      (value): value is string => typeof value === 'string',
+    );
 
     if (requiredRoles.length === 0) {
       return true;

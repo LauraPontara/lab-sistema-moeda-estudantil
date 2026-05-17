@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
@@ -24,7 +24,7 @@ const requirements = [
   },
 ];
 
-export default function RedefinirSenhaPage() {
+function RedefinirSenhaContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -258,6 +258,20 @@ export default function RedefinirSenhaPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RedefinirSenhaPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-background">
+          <p className="text-sm text-muted-foreground">Carregando...</p>
+        </div>
+      }
+    >
+      <RedefinirSenhaContent />
+    </Suspense>
   );
 }
 

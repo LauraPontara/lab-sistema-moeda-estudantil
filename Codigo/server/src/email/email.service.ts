@@ -3,14 +3,14 @@ import * as nodemailer from 'nodemailer';
 
 // Design-system color palette (inline for email clients)
 const DS = {
-  background: '#F9D826',   // --background  (yellow)
-  surface: '#FAFAFA',      // --surface     (near-white)
-  border: '#0A0A0A',       // --border      (near-black)
-  primary: '#E53A1E',      // --primary     (red)
-  primaryFg: '#FAFAFA',    // --primary-foreground
-  muted: '#FCEEB5',        // --muted       (light yellow)
-  mutedFg: '#5C4A38',      // --muted-foreground (warm brown)
-  foreground: '#0A0A0A',   // --foreground
+  background: '#F9D826', // --background  (yellow)
+  surface: '#FAFAFA', // --surface     (near-white)
+  border: '#0A0A0A', // --border      (near-black)
+  primary: '#E53A1E', // --primary     (red)
+  primaryFg: '#FAFAFA', // --primary-foreground
+  muted: '#FCEEB5', // --muted       (light yellow)
+  mutedFg: '#5C4A38', // --muted-foreground (warm brown)
+  foreground: '#0A0A0A', // --foreground
 };
 
 function emailWrapper(bodyHtml: string): string {
@@ -134,4 +134,67 @@ export class EmailService {
       );
     }
   }
+
+  async sendCoinsSentConfirmation(params: {
+    to: string;
+    professorName: string;
+    studentName: string;
+    amount: number;
+    reason: string;
+    balanceAfter: number;
+  }): Promise<void> {
+    const body = `
+      <h2 style="margin:0 0 16px;font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;">Envio confirmado ✅</h2>
+      <p style="margin:0 0 12px;">Olá, <strong>${params.professorName}</strong>!</p>
+      <p style="margin:0 0 12px;">Você enviou <strong>${params.amount} moedas</strong> para <strong>${params.studentName}</strong>.</p>
+      <p style="margin:0 0 12px;"><strong>Motivo informado:</strong> ${params.reason}</p>
+      <p style="margin:0;"><strong>Seu saldo atual:</strong> ${codeBlock(String(params.balanceAfter))} moedas</p>
+    `;
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Sistema de Moedas" <${process.env.SMTP_USER}>`,
+        to: params.to,
+        subject: 'Confirmação de envio de moedas',
+        html: emailWrapper(body),
+      });
+    } catch (error) {
+      this.logger.error(
+        `Falha ao enviar confirmação de envio para ${params.to}`,
+        error,
+      );
+    }
+  }
+
+  async sendCoinsReceivedNotification(params: {
+    to: string;
+    studentName: string;
+    professorName: string;
+    amount: number;
+    reason: string;
+    balanceAfter: number;
+  }): Promise<void> {
+    const body = `
+      <h2 style="margin:0 0 16px;font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;">Você recebeu moedas 🎉</h2>
+      <p style="margin:0 0 12px;">Olá, <strong>${params.studentName}</strong>!</p>
+      <p style="margin:0 0 12px;">Você recebeu <strong>${params.amount} moedas</strong> de <strong>${params.professorName}</strong>.</p>
+      <p style="margin:0 0 12px;"><strong>Mensagem do professor:</strong> ${params.reason}</p>
+      <p style="margin:0;"><strong>Seu saldo atual:</strong> ${codeBlock(String(params.balanceAfter))} moedas</p>
+    `;
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Sistema de Moedas" <${process.env.SMTP_USER}>`,
+        to: params.to,
+        subject: 'Você recebeu moedas no Sistema de Moeda Estudantil',
+        html: emailWrapper(body),
+      });
+    } catch (error) {
+      this.logger.error(
+        `Falha ao enviar notificação de recebimento para ${params.to}`,
+        error,
+      );
+    }
+  }
 }
+
