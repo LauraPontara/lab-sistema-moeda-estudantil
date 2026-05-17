@@ -120,6 +120,23 @@ export interface UserModel {
   updatedAt: string;
 }
 
+export interface CoinStatementEntry {
+  id: string;
+  amount: number;
+  message: string;
+  createdAt: string;
+  direction: "IN" | "OUT";
+  counterpartId: string;
+  counterpartName: string;
+  counterpartEmail: string;
+}
+
+export interface CoinStatement {
+  role: UserRole;
+  balance: number;
+  entries: CoinStatementEntry[];
+}
+
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
 export async function login(email: string, password: string) {
@@ -137,6 +154,24 @@ export async function getMe(): Promise<AuthUser> {
 
 export async function getMyProfile(): Promise<UserProfile> {
   const { data } = await api.get<UserProfile>("/users/me/profile");
+  return data;
+}
+
+// Coins
+export async function sendCoins(payload: {
+  studentId: string;
+  amount: number;
+  message: string;
+}): Promise<{ message: string; balance: number }> {
+  const { data } = await api.post<{ message: string; balance: number }>(
+    "/coins/transfers",
+    payload,
+  );
+  return data;
+}
+
+export async function getMyCoinStatement(): Promise<CoinStatement> {
+  const { data } = await api.get<CoinStatement>("/coins/statement/me");
   return data;
 }
 

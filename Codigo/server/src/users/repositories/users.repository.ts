@@ -4,6 +4,7 @@ import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DATABASE_CONNECTION } from '../../database/database.constants';
 import {
   administratorProfiles,
+  professorSemesterAllowances,
   partnerCompanyProfiles,
   professorProfiles,
   studentProfiles,
@@ -24,6 +25,12 @@ type StudentProfile = typeof studentProfiles.$inferSelect;
 type PartnerCompanyProfile = typeof partnerCompanyProfiles.$inferSelect;
 type ProfessorProfile = typeof professorProfiles.$inferSelect;
 type AdministratorProfile = typeof administratorProfiles.$inferSelect;
+
+function getSemesterCode(date: Date): string {
+  const month = date.getUTCMonth() + 1;
+  const semester = month <= 6 ? 1 : 2;
+  return `${date.getUTCFullYear()}-${semester}`;
+}
 
 export type UserWithStudentProfile = {
   user: AuthenticatedUser;
@@ -243,6 +250,12 @@ export class UsersRepository {
         })
         .returning();
 
+      await tx.insert(professorSemesterAllowances).values({
+        professorId: user.id,
+        semesterCode: getSemesterCode(new Date()),
+        amount: 1000,
+      });
+
       return { user, profile };
     });
   }
@@ -453,10 +466,7 @@ export class UsersRepository {
     return (profRow?.count ?? 0) + (studRow?.count ?? 0);
   }
 
-  async updatePassword(
-    userId: string,
-    hashedPassword: string,
-  ): Promise<void> {
+  async updatePassword(userId: string, hashedPassword: string): Promise<void> {
     await this.db
       .update(users)
       .set({ passwordHash: hashedPassword, updatedAt: new Date() })
