@@ -17,13 +17,6 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-const roleLabels = [
-  { value: "student", label: "Aluno" },
-  { value: "partner_company", label: "Empresa" },
-  { value: "professor", label: "Professor" },
-  { value: "admin", label: "Admin" },
-] as const;
-
 export default function LoginPage() {
   const { login } = useAuth();
   const [serverError, setServerError] = useState("");
@@ -71,29 +64,6 @@ export default function LoginPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               Acesse seu painel e suas moedas.
             </p>
-
-            {/* Role selector */}
-            <div className="mt-6">
-              <p className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Eu sou
-              </p>
-              <div className="flex rounded-full border-[2px] border-border bg-muted p-1 gap-1">
-                {roleLabels.map((r) => (
-                  <button
-                    key={r.value}
-                    type="button"
-                    onClick={() => setValue("role", r.value)}
-                    className={`flex-1 rounded-full py-1.5 text-xs font-bold uppercase tracking-wide transition-all ${
-                      selectedRole === r.value
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-foreground hover:text-primary"
-                    }`}
-                  >
-                    {r.label}
-                  </button>
-                ))}
-              </div>
-            </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
               <div>
