@@ -21,7 +21,7 @@ export class CoinsScheduler implements OnModuleInit {
     await this.runSemesterCredit('monthly-cron');
   }
 
-  @Cron('*/10 * * * * *', { timeZone: 'America/Sao_Paulo' })
+  @Cron('0 * * * * *', { timeZone: 'America/Sao_Paulo' })
   async processCoinTransferQueue(): Promise<void> {
     const processed = await this.queueService.consumePendingTransfers();
     if (processed > 0) {
