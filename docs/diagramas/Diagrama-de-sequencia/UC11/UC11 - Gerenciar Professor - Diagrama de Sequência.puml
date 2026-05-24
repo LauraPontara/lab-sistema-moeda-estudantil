@@ -1,0 +1,119 @@
+@startuml UC11-GerenciarProfessor
+title Sistema de Moeda Estudantil - UC11 - Gerenciar Professor
+
+actor "Admin" as ADM
+participant "Módulo de\nAdmin" as MA
+participant "Sistema de\nProfessores" as SP
+participant "Sistema de\nInstituições" as SI
+database "Banco de\nDados" as BD
+
+== 1. Acesso à Lista de Professores ==
+
+ADM -> MA: 1.1 acessarListaProfessores()
+activate MA
+MA -> SP: 1.2 listarTodosProfessores()
+activate SP
+SP -> BD: 1.3 buscarTodosProfessores()
+activate BD
+BD --> SP: 1.4 listaProfessores
+deactivate BD
+SP --> MA: 1.5 listaProfessores
+deactivate SP
+MA --> ADM: 1.6 exibirTabelaProfessores(listaProfessores)
+deactivate MA
+
+== 2. Cadastro de Professor ==
+
+ADM -> SP: 2.1 acessarCadastroProfessor()
+activate SP
+SP -> SI: 2.2 buscarInstituicoes()
+activate SI
+SI -> BD: 2.3 listarInstituicoes()
+activate BD
+BD --> SI: 2.4 listaInstituicoes
+deactivate BD
+SI --> SP: 2.5 listaInstituicoes
+deactivate SI
+SP --> ADM: 2.6 exibirFormulario(listaInstituicoes)
+deactivate SP
+
+ADM -> SP: 2.7 preencherFormulario(nome, email, senha, cpf, departamento, instituicaoId)
+activate SP
+
+alt Campos obrigatórios não preenchidos
+    SP --> ADM: 2.8 exibirErro("Preencha todos os campos obrigatórios")
+
+else CPF em formato inválido
+    SP --> ADM: 2.9 exibirErroCampo("cpf", "Formato de CPF inválido")
+
+else Dados válidos
+    SP --> ADM: 2.10 exibirCarregando()
+    deactivate SP
+end
+
+SP -> SP: 2.11 cadastrarProfessor(dadosProfessor)
+activate SP
+SP -> BD: 2.12 verificarEmailDisponivel(email)
+activate BD
+BD --> SP: 2.13 resultado
+deactivate BD
+
+alt Email já cadastrado
+    SP --> ADM: 2.15 exibirErro("Este email já está em uso")
+
+
+else Email disponível
+    SP -> SP: 2.16 hashSenha(senha)
+    SP -> BD: 2.17 criarProfessor(dadosProfessor)
+    activate BD
+    BD --> SP: 2.18 professorCriado
+    deactivate BD
+    SP --> ADM: 2.20 exibirSucesso("Professor cadastrado com sucesso")
+    deactivate SP
+   
+end
+
+== 3. Edição de Professor ==
+
+ADM -> MA: 3.1 selecionarEditarProfessor(professorId)
+activate MA
+MA -> SP: 3.2 buscarProfessorPorId(professorId)
+activate SP
+SP -> BD: 3.3 buscarProfessor(professorId)
+activate BD
+BD --> SP: 3.4 dadosProfessor
+deactivate BD
+SP --> MA: 3.5 dadosProfessor
+deactivate SP
+MA --> ADM: 3.6 exibirFormularioEdicao(dadosProfessor)
+deactivate MA
+
+ADM -> MA: 3.7 submeterAlteracoes(professorId, camposAtualizados)
+activate MA
+MA -> SP: 3.8 atualizarProfessor(professorId, camposAtualizados)
+activate SP
+SP -> BD: 3.9 salvarProfessor(professorId, dados)
+activate BD
+BD --> SP: 3.10 professorAtualizado
+deactivate BD
+SP --> MA: 3.11 professorAtualizado
+deactivate SP
+MA --> ADM: 3.12 exibirSucesso("Professor atualizado com sucesso")
+deactivate MA
+
+== 4. Remoção de Professor ==
+
+ADM -> MA: 4.1 removerProfessor(professorId)
+activate MA
+MA -> SP: 4.2 excluirProfessor(professorId)
+activate SP
+SP -> BD: 4.3 deletarUsuario(professorId)
+activate BD
+BD --> SP: 4.4 confirmacao
+deactivate BD
+SP --> MA: 4.5 confirmacao
+deactivate SP
+MA --> ADM: 4.6 exibirSucesso("Professor removido com sucesso")
+deactivate MA
+
+@enduml

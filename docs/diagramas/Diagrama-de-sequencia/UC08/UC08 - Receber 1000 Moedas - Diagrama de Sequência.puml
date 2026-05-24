@@ -1,0 +1,61 @@
+@startuml UC08-Receber1000Moedas
+title Sistema de Moeda Estudantil - UC08 - Receber 1000 Moedas
+
+actor "Professor" as P
+participant "Módulo do\nProfessor" as PP
+participant "Sistema de\nMoedas" as SM
+participant "Agendador de\nTarefas" as AT
+queue "Fila de\nMensagens" as FM
+participant "Serviço de\nEmail" as SE
+database "Banco de\nDados" as BD
+
+== 1. Crédito Semestral Automático (Agendado) ==
+
+AT -> SM: 1.1 executarCreditoSemestral()
+activate SM
+SM -> BD: 1.2 buscarTodosProfessores()
+activate BD
+BD --> SM: 1.3 listaProfessores
+deactivate BD
+
+loop Para cada professor
+    SM -> BD: 1.4 creditarMoedas(professorId, 1000)
+    activate BD
+    BD --> SM: 1.5 novoSaldo
+    deactivate BD
+    SM -> BD: 1.6 registrarCreditoSemestral(professorId, 1000, semestre)
+    activate BD
+    BD --> SM: 1.7 creditoRegistrado
+    deactivate BD
+    SM -> FM: 1.8 publicarNotificacaoCredito(professorEmail, novoSaldo)
+    activate FM
+    FM --> SM: 1.9 mensagemEnfileirada
+    deactivate FM
+end
+
+SM --> AT: 1.10 creditoSemestralConcluido()
+deactivate SM
+
+== 2. Notificação ao Professor (Assíncrona) ==
+
+FM -> SE: 2.1 processarNotificacaoCredito(professorEmail, novoSaldo)
+activate SE
+SE ->> P: 2.2 emailCreditoSemestral(1000, novoSaldo, semestre)
+deactivate SE
+
+== 3. Consulta de Saldo pelo Professor ==
+
+P -> PP: 3.1 acessarSaldo()
+activate PP
+PP -> SM: 3.2 buscarSaldoProfessor(professorId)
+activate SM
+SM -> BD: 3.3 consultarSaldo(professorId)
+activate BD
+BD --> SM: 3.4 saldoAtual
+deactivate BD
+SM --> PP: 3.5 saldoAtual
+deactivate SM
+PP --> P: 3.6 exibirSaldo(saldoAtual)
+deactivate PP
+
+@enduml

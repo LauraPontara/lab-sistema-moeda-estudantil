@@ -1,0 +1,115 @@
+@startuml UC12-GerenciarInstituicaoEstudantil
+title Sistema de Moeda Estudantil - UC12 - Gerenciar Instituição Estudantil
+
+actor "Admin" as ADM
+participant "Módulo de\nAdmin" as MA
+participant "Sistema de\nInstituições" as SI
+database "Banco de\nDados" as BD
+
+== 1. Acesso à Lista de Instituições ==
+
+ADM -> MA: 1.1 acessarListaInstituicoes()
+activate MA
+MA -> SI: 1.2 listarTodasInstituicoes()
+activate SI
+SI -> BD: 1.3 buscarTodasInstituicoes()
+activate BD
+BD --> SI: 1.4 listaInstituicoes
+deactivate BD
+
+alt Nenhuma instituição cadastrada
+    SI --> MA: 1.5 listaVazia
+    MA --> ADM: 1.6 exibirMensagem("Nenhuma instituição cadastrada")
+
+else Instituições encontradas
+    SI --> MA: 1.5 listaInstituicoes
+    deactivate SI
+    MA --> ADM: 1.6 exibirTabelaInstituicoes(listaInstituicoes)
+end
+deactivate MA
+
+== 2. Cadastro de Instituição ==
+
+ADM -> SI: 2.1 acessarCadastroInstituicao()
+activate SI
+SI --> ADM: 2.2 exibirFormulario(campos)
+deactivate SI
+
+ADM -> SI: 2.3 preencherFormulario(nome, cnpj, cidade, estado, endereco)
+activate SI
+
+alt Campos obrigatórios não preenchidos
+    SI --> ADM: 2.4 exibirErro("Preencha todos os campos obrigatórios")
+
+else CNPJ em formato inválido
+    SI --> ADM: 2.5 exibirErroCampo("cnpj", "Formato de CNPJ inválido")
+
+else Dados válidos
+    SI --> ADM: 2.6 exibirCarregando()
+    deactivate SI
+end
+
+SI -> SI: 2.7 cadastrarInstituicao(dadosInstituicao)
+activate SI
+SI -> BD: 2.8 verificarInstituicaoExistente(cnpj)
+activate BD
+BD --> SI: 2.9 resultado
+deactivate BD
+
+alt Instituição já cadastrada
+    SI --> ADM: 2.10 exibirErro("Já existe uma instituição com este CNPJ")
+
+else CNPJ disponível
+    SI -> BD: 2.12 criarInstituicao(dadosInstituicao)
+    activate BD
+    BD --> SI: 2.13 instituicaoCriada
+    deactivate BD
+    SI --> ADM: 2.15 exibirSucesso("Instituição cadastrada com sucesso")
+    deactivate SI
+
+end
+
+== 3. Edição de Instituição ==
+
+ADM -> MA: 3.1 selecionarEditarInstituicao(instituicaoId)
+activate MA
+MA -> SI: 3.2 buscarInstituicaoPorId(instituicaoId)
+activate SI
+SI -> BD: 3.3 buscarInstituicao(instituicaoId)
+activate BD
+BD --> SI: 3.4 dadosInstituicao
+deactivate BD
+SI --> MA: 3.5 dadosInstituicao
+deactivate SI
+MA --> ADM: 3.6 exibirFormularioEdicao(dadosInstituicao)
+deactivate MA
+
+ADM -> MA: 3.7 submeterAlteracoes(instituicaoId, camposAtualizados)
+activate MA
+MA -> SI: 3.8 atualizarInstituicao(instituicaoId, camposAtualizados)
+activate SI
+SI -> BD: 3.9 salvarInstituicao(instituicaoId, dados)
+activate BD
+BD --> SI: 3.10 instituicaoAtualizada
+deactivate BD
+SI --> MA: 3.11 instituicaoAtualizada
+deactivate SI
+MA --> ADM: 3.12 exibirSucesso("Instituição atualizada com sucesso")
+deactivate MA
+
+== 4. Remoção de Instituição ==
+
+ADM -> MA: 4.1 removerInstituicao(instituicaoId)
+activate MA
+MA -> SI: 4.2 excluirInstituicao(instituicaoId)
+activate SI
+SI -> BD: 4.3 deletarInstituicao(instituicaoId)
+activate BD
+BD --> SI: 4.4 confirmacao
+deactivate BD
+SI --> MA: 4.5 confirmacao
+deactivate SI
+MA --> ADM: 4.6 exibirSucesso("Instituição removida com sucesso")
+deactivate MA
+
+@enduml

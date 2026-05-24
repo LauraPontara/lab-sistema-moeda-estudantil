@@ -1,0 +1,98 @@
+@startuml UC07-EnviarMoedas
+title Sistema de Moeda Estudantil - UC07 - Enviar Moedas
+
+actor "Professor" as P
+actor "Aluno" as A
+participant "Sistema\nEnvio" as PE
+participant "Sistema de\nMoedas" as SM
+queue "Fila de\nMensagens" as FM
+participant "Serviço de\nEmail" as SE
+database "Banco de\nDados" as BD
+
+== 1. Acesso à Sistema Envio ==
+
+P -> PE: 1.1 acessarEnvioMoedas()
+activate PE
+PE -> SM: 1.2 buscarSaldoProfessor(professorId)
+activate SM
+SM -> BD: 1.3 consultarSaldo(professorId)
+activate BD
+BD --> SM: 1.4 saldoAtual
+deactivate BD
+SM --> PE: 1.5 saldoAtual
+deactivate SM
+PE --> P: 1.6 exibirFormulario(saldoAtual)
+deactivate PE
+
+== 2. Preenchimento e Validação do Formulário ==
+
+P -> PE: 2.1 preencherFormulario(alunoId, quantidade, mensagem)
+activate PE
+
+alt Campos obrigatórios não preenchidos
+    PE --> P: 2.2 exibirErro("Preencha todos os campos obrigatórios")
+
+else Mensagem não informada
+    PE --> P: 2.3 exibirErro("A mensagem de reconhecimento é obrigatória")
+
+else Quantidade inválida (<=0)
+    PE --> P: 2.4 exibirErro("A quantidade de moedas deve ser maior que zero")
+
+else Dados válidos
+    PE --> P: 2.5 exibirCarregando()
+    deactivate PE
+end
+
+== 3. Processamento do Envio ==
+
+PE -> SM: 3.1 enviarMoedas(professorId, alunoId, quantidade, mensagem)
+activate SM
+SM -> BD: 3.2 buscarSaldoEAluno(professorId, alunoId)
+activate BD
+BD --> SM: 3.3 saldoProfessor, dadosAluno
+deactivate BD
+
+alt Saldo insuficiente
+    SM --> PE: 3.4 erroSaldoInsuficiente(saldoAtual, quantidade)
+    activate PE
+    PE --> P: 3.5 exibirErro("Saldo insuficiente para enviar esta quantidade de moedas")
+    deactivate PE
+
+else Aluno não encontrado
+    SM --> PE: 3.6 erroAlunoNaoEncontrado()
+    activate PE
+    PE --> P: 3.7 exibirErro("Aluno não encontrado")
+    deactivate PE
+
+else Saldo suficiente e aluno válido
+    SM -> BD: 3.8 debitarSaldoProfessor(professorId, quantidade)
+    activate BD
+    BD --> SM: 3.9 saldoAtualizado
+    deactivate BD
+    SM -> BD: 3.10 creditarSaldoAluno(alunoId, quantidade)
+    activate BD
+    BD --> SM: 3.11 saldoAtualizado
+    deactivate BD
+    SM -> BD: 3.12 registrarTransacao(professorId, alunoId, quantidade, mensagem)
+    activate BD
+    BD --> SM: 3.13 transacaoRegistrada
+    deactivate BD
+    SM -> FM: 3.14 publicarNotificacaoEnvio(alunoEmail, professorNome, quantidade, mensagem)
+    activate FM
+    FM --> SM: 3.15 mensagemEnfileirada
+    deactivate FM
+    SM --> PE: 3.16 envioRealizado(novoSaldoProfessor)
+    deactivate SM
+    activate PE
+    PE --> P: 3.17 exibirSucesso("Moedas enviadas com sucesso", novoSaldoProfessor)
+    deactivate PE
+end
+
+== 4. Notificação ao Aluno (Assíncrona) ==
+
+FM -> SE: 4.1 processarNotificacaoEnvio(alunoEmail, professorNome, quantidade, mensagem)
+activate SE
+SE -->> A: 4.2 emailRecebimentoMoedas(quantidade, professorNome, mensagem, novoSaldo)
+deactivate SE
+
+@enduml

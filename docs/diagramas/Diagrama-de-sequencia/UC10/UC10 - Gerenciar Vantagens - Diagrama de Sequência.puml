@@ -1,0 +1,105 @@
+@startuml UC10-GerenciarVantagens
+title Sistema de Moeda Estudantil - UC10 - Gerenciar Vantagens
+
+actor "Empresa\nParceira" as E
+participant "Sistema da\nEmpresa" as PEm
+participant "Sistema de\nVantagens" as SV
+database "Banco de\nDados" as BD
+
+== 1. Acesso ao Painel de Vantagens ==
+
+E -> PEm: 1.1 acessarPainelVantagens()
+activate PEm
+PEm -> SV: 1.2 listarVantagensDaEmpresa(empresaId)
+activate SV
+SV -> BD: 1.3 buscarVantagensPorEmpresa(empresaId)
+activate BD
+BD --> SV: 1.4 listaVantagens
+deactivate BD
+
+alt Nenhuma vantagem cadastrada
+    SV --> PEm: 1.5 listaVazia
+    PEm --> E: 1.6 exibirMensagem("Nenhuma vantagem cadastrada ainda")
+
+else Vantagens encontradas
+    SV --> PEm: 1.5 listaVantagens
+    deactivate SV
+    PEm --> E: 1.6 exibirListaVantagens(listaVantagens)
+end
+deactivate PEm
+
+== 2. Cadastro de Vantagem ==
+
+E -> SV: 2.1 acessarCadastroVantagem()
+activate SV
+SV --> E: 2.2 exibirFormulario(campos)
+deactivate SV
+
+E -> SV: 2.3 preencherFormulario(nome, descricao, fotoUrl, custoMoedas)
+activate SV
+
+alt Campos obrigatórios não preenchidos
+    SV --> E: 2.4 exibirErro("Preencha todos os campos obrigatórios")
+
+else Custo de moedas inválido (<=0)
+    SV --> E: 2.5 exibirErroCampo("custoMoedas", "O custo deve ser maior que zero")
+
+else Dados válidos
+    SV --> E: 2.6 exibirCarregando()
+    deactivate SV
+end
+
+E -> SV: 2.7 cadastrarVantagem(empresaId, nome, descricao, fotoUrl, custoMoedas)
+activate SV
+SV -> BD: 2.8 criarVantagem(dadosVantagem)
+activate BD
+BD --> SV: 2.9 vantagemCriada
+deactivate BD
+SV --> E: 2.11 exibirSucesso("Vantagem cadastrada com sucesso")
+deactivate SV
+
+
+== 3. Edição de Vantagem ==
+
+E -> PEm: 3.1 selecionarEditarVantagem(vantagemId)
+activate PEm
+PEm -> SV: 3.2 buscarVantagemPorId(vantagemId)
+activate SV
+SV -> BD: 3.3 buscarVantagem(vantagemId)
+activate BD
+BD --> SV: 3.4 dadosVantagem
+deactivate BD
+SV --> PEm: 3.5 dadosVantagem
+deactivate SV
+PEm --> E: 3.6 exibirFormularioEdicao(dadosVantagem)
+deactivate PEm
+
+E -> PEm: 3.7 submeterAlteracoes(vantagemId, camposAtualizados)
+activate PEm
+PEm -> SV: 3.8 atualizarVantagem(vantagemId, camposAtualizados)
+activate SV
+SV -> BD: 3.9 salvarVantagem(vantagemId, dados)
+activate BD
+BD --> SV: 3.10 vantagemAtualizada
+deactivate BD
+SV --> PEm: 3.11 vantagemAtualizada
+deactivate SV
+PEm --> E: 3.12 exibirSucesso("Vantagem atualizada com sucesso")
+deactivate PEm
+
+== 4. Remoção de Vantagem ==
+
+E -> PEm: 4.1 removerVantagem(vantagemId)
+activate PEm
+PEm -> SV: 4.2 excluirVantagem(vantagemId)
+activate SV
+SV -> BD: 4.3 deletarVantagem(vantagemId)
+activate BD
+BD --> SV: 4.4 confirmacao
+deactivate BD
+SV --> PEm: 4.5 confirmacao
+deactivate SV
+PEm --> E: 4.6 exibirSucesso("Vantagem removida com sucesso")
+deactivate PEm
+
+@enduml
