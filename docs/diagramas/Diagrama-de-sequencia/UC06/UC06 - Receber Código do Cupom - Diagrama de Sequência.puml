@@ -1,0 +1,45 @@
+@startuml UC06-ReceberCodigoCupom
+title Sistema de Moeda Estudantil - UC06 - Receber Código do Cupom
+
+actor "Aluno" as A
+actor "Empresa\nParceira" as E
+participant "Página de\nResgate" as PR
+participant "Sistema de\nVantagens" as SV
+queue "Fila de\nMensagens" as FM
+participant "Serviço de\nEmail" as SE
+database "Banco de\nDados" as BD
+
+== 1. Processamento do Resgate ==
+
+ref over A, PR, SV, FM, BD
+    UC05 - Resgatar Vantagem
+end ref
+
+== 2. Geração, Armazenamento e Enfileiramento ==
+
+PR -> SV: 2.1 processarCupom(resgateId, studentId, vantagemId)
+activate SV
+SV -> SV: 2.2 gerarCodigoCupom()
+SV -> BD: 2.3 registrarCupom(cupomCodigo, resgateId, studentId, vantagemId)
+activate BD
+BD --> SV: 2.4 cupomRegistrado
+deactivate BD
+SV -> FM: 2.5 publicarNotificacaoCupom(cupomCodigo, studentEmail, empresaEmail)
+activate FM
+FM --> SV: 2.6 mensagemEnfileirada
+deactivate FM
+SV --> PR: 2.7 cupomCodigo
+deactivate SV
+activate PR
+PR --> A: 2.8 exibirCupom(cupomCodigo)
+deactivate PR
+
+== 3. Notificação (Assíncrona) ==
+
+FM -> SE: 3.1 processarNotificacao(cupomCodigo, studentEmail, empresaEmail)
+activate SE
+SE ->> A: 3.2 emailCupomAluno(cupomCodigo, instrucoes)
+SE ->> E: 3.3 emailCupomEmpresa(cupomCodigo, dadosAluno)
+deactivate SE
+
+@enduml

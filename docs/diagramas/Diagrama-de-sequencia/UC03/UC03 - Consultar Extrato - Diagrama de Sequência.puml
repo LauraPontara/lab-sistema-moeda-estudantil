@@ -1,0 +1,52 @@
+@startuml UC03-ConsultarExtrato
+title Sistema de Moeda Estudantil - UC03 - Consultar Extrato
+
+actor "Professor" as P
+actor "Aluno" as A
+participant "Página de\nExtrato" as PE
+participant "Sistema de\nMoedas" as SM
+database "Banco de\nDados" as BD
+
+== 1. Acesso ao Extrato (Professor) ==
+
+P -> PE: 1.1 acessarExtrato()
+activate PE
+PE --> P: 1.2 exibirCarregando()
+deactivate PE
+
+== 2. Consulta do Extrato do Professor ==
+
+PE -> SM: 2.1 buscarMeuExtrato(professorId)
+activate SM
+SM -> BD: 2.2 buscarEnviosDoProfessor(professorId)
+activate BD
+BD --> SM: 2.3 listaEnvios
+deactivate BD
+SM --> PE: 2.4 extratoCompleto(saldo, listaEnvios)
+deactivate SM
+activate PE
+PE --> P: 2.5 exibirExtrato(saldo, listaEnvios)
+deactivate PE
+
+== 3. Acesso ao Extrato (Aluno) ==
+
+A -> PE: 3.1 acessarExtrato()
+activate PE
+PE --> A: 3.2 exibirCarregando()
+deactivate PE
+
+== 4. Consulta do Extrato do Aluno ==
+
+PE -> SM: 4.1 buscarMeuExtrato(studentId)
+activate SM
+SM -> BD: 4.2 buscarRecebimentosDoAluno(studentId)
+activate BD
+BD --> SM: 4.3 listaRecebimentos
+deactivate BD
+SM --> PE: 4.4 extratoCompleto(saldo, listaRecebimentos)
+deactivate SM
+activate PE
+PE --> A: 4.5 exibirExtrato(saldo, listaRecebimentos)
+deactivate PE
+
+@enduml

@@ -1,0 +1,65 @@
+@startuml UC05-ResgatarVantagem
+title Sistema de Moeda Estudantil - UC05 - Resgatar Vantagem
+
+actor "Aluno" as A
+actor "Empresa\nParceira" as E
+participant "Página de\nResgate" as PR
+participant "Sistema de\nVantagens" as SV
+queue "Fila de\nMensagens" as FM
+participant "Serviço de\nEmail" as SE
+database "Banco de\nDados" as BD
+
+== 1. Confirmação do Resgate ==
+
+A -> PR: 1.1 selecionarResgate(vantagemId)
+activate PR
+PR --> A: 1.2 exibirConfirmacao(nomeVantagem, custoMoedas, saldoAtual)
+deactivate PR
+
+A -> PR: 1.3 confirmarResgate()
+activate PR
+PR --> A: 1.4 exibirCarregando()
+deactivate PR
+
+== 2. Validação e Processamento ==
+
+PR -> SV: 2.1 resgatarVantagem(studentId, vantagemId)
+activate SV
+SV -> BD: 2.2 buscarSaldoECustoVantagem(studentId, vantagemId)
+activate BD
+BD --> SV: 2.3 saldoAtual, custoMoedas
+deactivate BD
+
+alt Saldo insuficiente
+    SV --> PR: 2.4 erroSaldoInsuficiente(saldoAtual, custoMoedas)
+    activate PR
+    PR --> A: 2.5 exibirErro("Saldo insuficiente para resgatar esta vantagem")
+    deactivate PR
+
+else Saldo suficiente
+    SV -> SV: 2.6 gerarCodigoCupom()
+    SV -> BD: 2.7 debitarSaldoERegistrarResgate(studentId, custoMoedas, cupomCodigo)
+    activate BD
+    BD --> SV: 2.8 resgateConfirmado
+    deactivate BD
+    SV -> FM: 2.9 publicarNotificacao(cupomCodigo, studentEmail, empresaEmail)
+    activate FM
+    FM --> SV: 2.10 mensagemEnfileirada
+    deactivate FM
+    SV --> PR: 2.11 resgateRealizado(cupomCodigo)
+    deactivate SV
+    activate PR
+    PR --> A: 2.12 exibirCupom(cupomCodigo)
+    deactivate PR
+end
+
+
+== 3. Notificação (Assíncrona) ==
+
+FM -> SE: 3.1 processarNotificacao(cupomCodigo, studentEmail, empresaEmail)
+activate SE
+SE ->> A: 3.2 emailCupomAluno(cupomCodigo, instrucoes)
+SE ->> E: 3.3 emailCupomEmpresa(cupomCodigo, dadosAluno)
+deactivate SE
+
+@enduml

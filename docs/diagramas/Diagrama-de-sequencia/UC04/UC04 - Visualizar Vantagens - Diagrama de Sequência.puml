@@ -1,0 +1,55 @@
+@startuml UC04-VisualizarVantagens
+title Sistema de Moeda Estudantil - UC04 - Visualizar Vantagens
+
+actor "Aluno" as A
+participant "Página de\nVantagens" as PV
+participant "Sistema de\nVantagens" as SV
+database "Banco de\nDados" as BD
+
+== 1. Acesso ao Catálogo ==
+
+A -> PV: 1.1 acessarVantagens()
+activate PV
+PV --> A: 1.2 exibirCarregando()
+deactivate PV
+
+== 2. Carregamento das Vantagens ==
+
+PV -> SV: 2.1 buscarVantagens()
+activate SV
+SV -> BD: 2.2 listarVantagensAtivas()
+activate BD
+BD --> SV: 2.3 listaVantagens
+deactivate BD
+
+alt Nenhuma vantagem disponível
+    SV --> PV: 2.4 listaVazia
+    activate PV
+    PV --> A: 2.5 exibirMensagem("Nenhuma vantagem disponível no momento")
+    deactivate PV
+
+else Vantagens encontradas
+    SV --> PV: 2.4 listaVantagens(nome, descricao, fotoUrl, custoMoedas, empresa)
+    deactivate SV
+    activate PV
+    PV --> A: 2.5 exibirCatalogo(listaVantagens)
+    deactivate PV
+end
+
+
+== 3. Visualização de Detalhes ==
+
+A -> PV: 3.1 selecionarVantagem(vantagemId)
+activate PV
+PV -> SV: 3.2 buscarDetalhesVantagem(vantagemId)
+activate SV
+SV -> BD: 3.3 buscarVantagemPorId(vantagemId)
+activate BD
+BD --> SV: 3.4 dadosVantagem
+deactivate BD
+SV --> PV: 3.5 dadosVantagem(nome, descricao, fotoUrl, custoMoedas, empresa)
+deactivate SV
+PV --> A: 3.6 exibirDetalhes(dadosVantagem)
+deactivate PV
+
+@enduml

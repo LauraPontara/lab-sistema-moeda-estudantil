@@ -1,0 +1,129 @@
+@startuml UC02-GerenciarAluno
+title Sistema de Moeda Estudantil - UC02 - Gerenciar Aluno
+
+actor Aluno as A
+actor Admin as ADM
+participant "Formulário de\nCadastro" as FC
+participant "Formulário de\nPerfil" as FP
+participant "Sistema de\nAlunos" as SA
+participant "Sistema de\nInstituições" as SI
+database "Banco de\nDados" as BD
+
+== 1. Acesso ao Formulário de Cadastro ==
+
+A -> FC: 1.1 acessarCadastro()
+activate FC
+FC -> SI: 1.2 buscarInstituicoes()
+activate SI
+SI -> BD: 1.3 listarInstituicoes()
+activate BD
+BD --> SI: 1.4 listaInstituicoes
+deactivate BD
+SI --> FC: 1.5 listaInstituicoes
+deactivate SI
+FC --> A: 1.6 exibirFormulario(listaInstituicoes)
+deactivate FC
+
+== 2. Validação de Dados ==
+
+A -> FC: 2.1 preencherFormulario(nome, email, senha, cpf, rg, endereco, cep, curso, instituicaoId)
+activate FC
+
+alt Campos obrigatórios não preenchidos
+    FC --> A: 2.2 exibirErro("Preencha todos os campos obrigatórios")
+
+else CPF ou CEP em formato inválido
+    FC --> A: 2.3 exibirErroCampo(campo, "Formato inválido")
+
+else Dados válidos
+    FC --> A: 2.4 exibirCarregando()
+
+    deactivate FC
+end
+
+== 3. Criação da Conta ==
+
+FC -> SA: 3.1 cadastrarAluno(dadosAluno)
+activate SA
+SA -> BD: 3.2 verificarEmailDisponivel(email)
+activate BD
+BD --> SA: 3.3 resultado
+deactivate BD
+
+alt Email já cadastrado
+    SA --> FC: 3.4 erroEmailJaEmUso(email)
+    activate FC
+    FC --> A: 3.5 exibirErro("Este email já está em uso")
+    deactivate FC
+
+else Email disponível
+    SA -> SA: 3.6 hashSenha(senha)
+    SA -> BD: 3.7 criarUsuarioEPerfil(dadosAluno)
+    activate BD
+    BD --> SA: 3.8 alunoCriado
+    deactivate BD
+    SA --> FC: 3.9 alunoCriado
+    deactivate SA
+    activate FC
+    FC --> A: 3.10 redirecionarPara("/entrar")
+    deactivate FC
+end
+
+
+== 4. Edição de Perfil ==
+
+A -> FP: 4.1 acessarPerfil()
+activate FP
+FP -> SA: 4.2 buscarMeuPerfil(userId)
+activate SA
+SA -> BD: 4.3 buscarPerfilAluno(userId)
+activate BD
+BD --> SA: 4.4 dadosPerfil
+deactivate BD
+SA --> FP: 4.5 dadosPerfil
+deactivate SA
+FP --> A: 4.6 exibirFormularioPerfil(dadosPerfil)
+deactivate FP
+
+A -> FP: 4.7 submeterAlteracoes(camposAtualizados)
+activate FP
+FP -> SA: 4.8 atualizarPerfil(userId, camposAtualizados)
+activate SA
+SA -> BD: 4.9 salvarPerfilAluno(userId, dados)
+activate BD
+BD --> SA: 4.10 perfilAtualizado
+deactivate BD
+SA --> FP: 4.11 perfilAtualizado
+deactivate SA
+FP --> A: 4.12 exibirSucesso("Perfil atualizado com sucesso")
+deactivate FP
+
+== 5. Gerenciamento pelo Admin ==
+
+ADM -> FP: 5.1 acessarListaAlunos()
+activate FP
+FP -> SA: 5.2 listarTodosAlunos()
+activate SA
+SA -> BD: 5.3 buscarTodosAlunos()
+activate BD
+BD --> SA: 5.4 listaAlunos
+deactivate BD
+SA --> FP: 5.5 listaAlunos
+deactivate SA
+FP --> ADM: 5.6 exibirTabelaAlunos(listaAlunos)
+deactivate FP
+
+ADM -> FP: 5.7 removerAluno(alunoId)
+activate FP
+FP -> SA: 5.8 excluirAluno(alunoId)
+activate SA
+SA -> BD: 5.9 deletarUsuario(alunoId)
+activate BD
+BD --> SA: 5.10 confirmacao
+deactivate BD
+SA --> FP: 5.11 confirmacao
+deactivate SA
+FP --> ADM: 5.12 exibirSucesso("Aluno removido")
+deactivate FP
+
+@enduml

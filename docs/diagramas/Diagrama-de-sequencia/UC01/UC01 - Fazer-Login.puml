@@ -1,0 +1,79 @@
+@startuml UC01-FazerLogin
+title Sistema de Moeda Estudantil - UC01 - Fazer Login
+
+actor "Usuário" as U
+participant "Tela de\nLogin" as TL
+participant "Controlador de\nAutenticação" as CC
+participant "Serviço de\nAutenticação" as SA
+participant "Contexto de\nAutenticação" as AC
+database "Banco de\nDados" as BD
+
+== 1. Acesso à Tela de Login ==
+
+U -> TL: 1.1 acessarSistema()
+activate TL
+TL --> U: 1.2 exibirFormulario(seletorPerfil, campos)
+deactivate TL
+
+== 2. Login ==
+
+U -> TL: 2.1 preencherESubmeter(role, email, senha)
+activate TL
+
+alt Email ou senha não preenchidos
+    TL --> U: 2.2 exibirErro("Preencha todos os campos")
+
+else Formato de email inválido
+    TL --> U: 2.3 exibirErro("Formato de email inválido")
+
+else Dados válidos
+    TL --> U: 2.4 exibirCarregando()
+    deactivate TL
+end
+
+== 3. Autenticação ==
+
+TL -> CC: 3.1 autenticar(email, senha)
+activate CC
+CC -> SA: 3.2 login(email, senha)
+activate SA
+SA -> BD: 3.3 buscarUsuarioPorEmail(email)
+activate BD
+BD --> SA: 3.4 dadosUsuario
+deactivate BD
+
+alt Usuário não encontrado ou senha incorreta
+    SA --> CC: 3.5 erroCredenciaisInvalidas()
+    CC --> TL: 3.6 erroCredenciaisInvalidas(mensagem)
+    deactivate CC
+    activate TL
+    TL --> U: 3.7 exibirErro("Email ou senha incorretos")
+    deactivate TL
+
+else Credenciais válidas
+    SA -> SA: 3.8 verificarSenha(senhaFornecida, hashBD)
+    SA -> SA: 3.9 gerarJWT(userId, email, role)
+    SA --> CC: 3.10 tokenEDadosUsuario
+    deactivate SA
+    activate CC
+    CC --> TL: 3.11 tokenEDadosUsuario
+    deactivate CC
+    activate TL
+    TL -> TL: 3.12 salvarCookie("xp_token", access_token)
+    TL --> U: 3.13 loginRealizado()
+    deactivate TL
+end
+
+deactivate SA
+
+== 4. Redirecionamento ==
+
+TL -> AC: 4.1 setUser(dadosUsuario)
+activate TL
+activate AC
+AC --> TL: 4.2 contextoAtualizado()
+deactivate AC
+TL --> U: 4.3 redirecionarPara("/painel")
+deactivate TL
+
+@enduml
