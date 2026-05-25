@@ -36,6 +36,20 @@
       "when": 1779045600000,
       "tag": "0004_supabase_queue_setup",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1779565379244,
+      "tag": "0005_modern_the_leader",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1779567000000,
+      "tag": "0006_advantage_redemption_queue",
+      "breakpoints": true
     }
   ]
 }

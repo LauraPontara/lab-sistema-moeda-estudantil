@@ -12,8 +12,9 @@ export function generateTemporaryPassword(): string {
     symbols[Math.floor(Math.random() * symbols.length)],
   ];
 
-  const rest = Array.from({ length: 6 }, () =>
-    all[Math.floor(Math.random() * all.length)],
+  const rest = Array.from(
+    { length: 6 },
+    () => all[Math.floor(Math.random() * all.length)],
   );
 
   return [...required, ...rest].sort(() => Math.random() - 0.5).join('');
