@@ -3,7 +3,7 @@ title Sistema de Moeda Estudantil - UC05 - Resgatar Vantagem
 
 actor "Aluno" as A
 actor "Empresa\nParceira" as E
-participant "Página de\nResgate" as PR
+participant "Resgate" as PR
 participant "Sistema de\nVantagens" as SV
 queue "Fila de\nMensagens" as FM
 participant "Serviço de\nEmail" as SE

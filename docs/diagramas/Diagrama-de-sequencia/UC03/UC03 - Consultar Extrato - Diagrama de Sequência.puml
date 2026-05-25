@@ -3,7 +3,7 @@ title Sistema de Moeda Estudantil - UC03 - Consultar Extrato
 
 actor "Professor" as P
 actor "Aluno" as A
-participant "Página de\nExtrato" as PE
+participant "Extrato" as PE
 participant "Sistema de\nMoedas" as SM
 database "Banco de\nDados" as BD
 
@@ -48,5 +48,11 @@ deactivate SM
 activate PE
 PE --> A: 4.5 exibirExtrato(saldo, listaRecebimentos)
 deactivate PE
+
+== 5. [Extend] Envio de Moedas a partir do Extrato ==
+
+alt Professor decide enviar moedas (UC07 - extend)
+    ref over P, PE, SM, BD: UC07 - Enviar Moedas\n(Professor seleciona aluno e envia moedas\na partir da tela de extrato)
+end
 
 @enduml

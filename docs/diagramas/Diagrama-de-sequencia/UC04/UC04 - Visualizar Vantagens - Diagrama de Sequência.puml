@@ -2,7 +2,7 @@
 title Sistema de Moeda Estudantil - UC04 - Visualizar Vantagens
 
 actor "Aluno" as A
-participant "Página de\nVantagens" as PV
+participant "Vantagens" as PV
 participant "Sistema de\nVantagens" as SV
 database "Banco de\nDados" as BD
 

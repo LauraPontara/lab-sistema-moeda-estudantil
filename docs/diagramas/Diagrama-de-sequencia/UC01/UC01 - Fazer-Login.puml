@@ -2,13 +2,13 @@
 title Sistema de Moeda Estudantil - UC01 - Fazer Login
 
 actor "Usuário" as U
-participant "Tela de\nLogin" as TL
+participant "Login" as TL
 participant "Controlador de\nAutenticação" as CC
 participant "Serviço de\nAutenticação" as SA
 participant "Contexto de\nAutenticação" as AC
 database "Banco de\nDados" as BD
 
-== 1. Acesso à Tela de Login ==
+== 1. Acesso ao Login ==
 
 U -> TL: 1.1 acessarSistema()
 activate TL

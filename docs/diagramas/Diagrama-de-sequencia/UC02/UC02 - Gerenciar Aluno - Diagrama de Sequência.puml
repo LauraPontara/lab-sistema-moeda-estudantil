@@ -3,13 +3,13 @@ title Sistema de Moeda Estudantil - UC02 - Gerenciar Aluno
 
 actor Aluno as A
 actor Admin as ADM
-participant "Formulário de\nCadastro" as FC
-participant "Formulário de\nPerfil" as FP
+participant "Cadastro" as FC
+participant "Perfil" as FP
 participant "Sistema de\nAlunos" as SA
 participant "Sistema de\nInstituições" as SI
 database "Banco de\nDados" as BD
 
-== 1. Acesso ao Formulário de Cadastro ==
+== 1. Acesso ao Cadastro ==
 
 A -> FC: 1.1 acessarCadastro()
 activate FC
