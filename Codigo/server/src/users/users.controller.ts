@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   Param,
@@ -33,7 +34,8 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Get('users')
   findAll(): Promise<UserModel[]> {
     return this.usersService.findAll();
@@ -49,7 +51,13 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('users/:id')
-  findById(@Param('id') id: string): Promise<UserModel> {
+  findById(
+    @Param('id') id: string,
+    @CurrentUser() currentUser: JwtPayload,
+  ): Promise<UserModel> {
+    if (currentUser.sub !== id && currentUser.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('Acesso negado.');
+    }
     return this.usersService.findById(id);
   }
 
@@ -82,7 +90,8 @@ export class UsersController {
     await this.usersService.delete(currentUser.sub);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Delete('users/:id')
   @HttpCode(204)
   async delete(@Param('id') id: string): Promise<void> {
@@ -125,6 +134,16 @@ export class UsersController {
   @Get('professors')
   findProfessors(): Promise<ProfessorModel[]> {
     return this.usersService.findProfessors();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Patch('professors/:id')
+  updateProfessor(
+    @Param('id') id: string,
+    @Body() dto: UpdateProfileDto,
+  ): Promise<ProfessorModel> {
+    return this.usersService.updateProfessorByAdmin(id, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

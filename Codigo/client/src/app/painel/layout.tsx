@@ -7,56 +7,37 @@ import { BrandLogo } from "@/components/ui/BrandLogo";
 import { CoinIcon } from "@/components/ui/CoinIcon";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { useEffect } from "react";
+import {
+  LayoutDashboard,
+  ArrowLeftRight,
+  FileText,
+  User,
+  Building2,
+  GraduationCap,
+  Users,
+} from "lucide-react";
 
 const studentNav = [
-  { label: "Painel", href: "/painel", icon: PainelIcon },
-  { label: "Trocar moedas", href: "/painel/trocar", icon: TrocarIcon },
-  { label: "Extrato", href: "/painel/extrato", icon: ExtratoIcon },
-  { label: "Perfil", href: "/painel/perfil", icon: PerfilIcon },
+  { label: "Painel", href: "/painel", icon: LayoutDashboard },
+  { label: "Trocar moedas", href: "/painel/trocar", icon: ArrowLeftRight },
+  { label: "Extrato", href: "/painel/extrato", icon: FileText },
+  { label: "Perfil", href: "/painel/perfil", icon: User },
 ];
 
 const companyNav = [
-  { label: "Painel", href: "/painel", icon: PainelIcon },
-  { label: "Minhas vantagens", href: "/painel/vantagens", icon: TrocarIcon },
-  { label: "Perfil", href: "/painel/perfil", icon: PerfilIcon },
+  { label: "Painel", href: "/painel", icon: LayoutDashboard },
+  { label: "Minhas vantagens", href: "/painel/vantagens", icon: ArrowLeftRight },
+  { label: "Perfil", href: "/painel/perfil", icon: User },
 ];
 
-function PainelIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  );
-}
-function TrocarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <path d="M20 12V22H4V12" /><path d="M22 7H2v5h20V7z" />
-      <path d="M12 22V7" /><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z" />
-      <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z" />
-    </svg>
-  );
-}
-function ExtratoIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="16" y1="13" x2="8" y2="13" />
-      <line x1="16" y1="17" x2="8" y2="17" />
-      <polyline points="10 9 9 9 8 9" />
-    </svg>
-  );
-}
-function PerfilIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
+const adminNav = [
+  { label: "Painel", href: "/painel", icon: LayoutDashboard },
+  { label: "Instituições", href: "/painel/instituicoes", icon: Building2 },
+  { label: "Professores", href: "/painel/professores", icon: GraduationCap },
+  { label: "Usuários", href: "/painel/usuarios", icon: Users },
+];
+
+
 
 export default function DashboardLayout({
   children,
@@ -83,9 +64,22 @@ export default function DashboardLayout({
 
   const isStudent = user.role === "STUDENT";
   const isCompany = user.role === "PARTNER_COMPANY";
-  const navItems = isStudent ? studentNav : isCompany ? companyNav : studentNav;
+  const isAdmin = user.role === "ADMIN";
+  const navItems = isAdmin
+    ? adminNav
+    : isStudent
+    ? studentNav
+    : isCompany
+    ? companyNav
+    : studentNav;
 
-  const roleLabel = isStudent ? "Aluno" : isCompany ? "Empresa" : user.role;
+  const roleLabel = isAdmin
+    ? "Administrador"
+    : isStudent
+    ? "Aluno"
+    : isCompany
+    ? "Empresa"
+    : user.role;
   const displayName = (profile as { displayName?: string })?.displayName ?? user.email;
 
   return (
@@ -114,7 +108,7 @@ export default function DashboardLayout({
                     : "text-foreground hover:bg-muted"
                 }`}
               >
-                <Icon />
+                <Icon className="h-4 w-4" />
                 {item.label}
               </Link>
             );

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Eye, EyeOff } from "lucide-react";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 import { useAuth } from "@/context/AuthContext";
 
@@ -26,6 +27,7 @@ const roleLabels = [
 export default function LoginPage() {
   const { login } = useAuth();
   const [serverError, setServerError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -115,12 +117,22 @@ export default function LoginPage() {
                 <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
                   Senha
                 </label>
-                <input
-                  {...register("password")}
-                  type="password"
-                  placeholder="••••••••"
-                  className="w-full rounded-xl border-[2px] border-border-on-surface bg-input px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-                />
+                <div className="relative">
+                  <input
+                    {...register("password")}
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    className="w-full rounded-xl border-[2px] border-border-on-surface bg-input px-4 py-3 pr-11 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
                 {errors.password && (
                   <p className="mt-1 text-xs text-destructive">
                     {errors.password.message}
@@ -132,6 +144,17 @@ export default function LoginPage() {
                 <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
                   {serverError}
                 </p>
+              )}
+
+              {selectedRole !== "admin" && (
+                <div className="text-right">
+                  <Link
+                    href="/esqueci-senha"
+                    className="text-xs font-semibold text-primary hover:underline"
+                  >
+                    Esqueceu a senha?
+                  </Link>
+                </div>
               )}
 
               <button
@@ -158,3 +181,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+

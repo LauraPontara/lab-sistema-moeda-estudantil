@@ -1,7 +1,15 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '../database/schemas';
 import { EmailAlreadyInUseException } from '../common/exceptions/email-already-in-use.exception';
+import { generateTemporaryPassword } from '../common/utils/password.util';
+import { EmailService } from '../email/email.service';
+import { InstitutionsService } from '../institutions/institutions.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { CreatePartnerCompanyDto } from './dto/create-partner-company.dto';
 import { CreateProfessorDto } from './dto/create-professor.dto';
@@ -19,7 +27,12 @@ import { UsersRepository } from './repositories/users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly emailService: EmailService,
+    private readonly jwtService: JwtService,
+    private readonly institutionsService: InstitutionsService,
+  ) {}
 
   async findAll(role?: UserRole): Promise<UserModel[]> {
     const users = await this.usersRepository.findAll(role);
@@ -87,11 +100,28 @@ export class UsersService {
 
   async createProfessor(dto: CreateProfessorDto): Promise<ProfessorModel> {
     await this.ensureEmailIsAvailable(dto.email);
-    const passwordHash = await this.hashPassword(dto.password);
+    await this.institutionsService.findById(dto.institutionId);
+
+    const temporaryPassword = generateTemporaryPassword();
+    const passwordHash = await this.hashPassword(temporaryPassword);
+
     const professor = await this.usersRepository.createProfessor(
       dto,
       passwordHash,
     );
+
+    const resetToken = this.jwtService.sign(
+      { sub: professor.user.id, purpose: 'password-reset' },
+      { expiresIn: '24h', secret: process.env.RESET_PASSWORD_SECRET },
+    );
+
+    void this.emailService.sendProfessorWelcome({
+      to: dto.email,
+      name: dto.name,
+      temporaryPassword,
+      resetToken,
+    });
+
     return UserMapper.toProfessorModel(professor);
   }
 
@@ -206,6 +236,26 @@ export class UsersService {
     if (!deleted) {
       throw new NotFoundException('Usuario nao encontrado.');
     }
+  }
+
+  async updatePassword(userId: string, hashedPassword: string): Promise<void> {
+    await this.usersRepository.updatePassword(userId, hashedPassword);
+  }
+
+  async updateProfessorByAdmin(
+    professorUserId: string,
+    dto: UpdateProfileDto,
+  ): Promise<ProfessorModel> {
+    const professor = await this.usersRepository.updateProfessorProfile(
+      professorUserId,
+      dto,
+    );
+
+    if (!professor) {
+      throw new NotFoundException('Professor nao encontrado.');
+    }
+
+    return UserMapper.toProfessorModel(professor);
   }
 
   private async ensureEmailIsAvailable(
