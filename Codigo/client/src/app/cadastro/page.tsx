@@ -41,6 +41,7 @@ const studentSchema = z.object({
     ),
   institutionId: z.string().uuid("Selecione uma instituição"),
   course: z.string().min(1, "Curso obrigatório"),
+  whatsappPhone: z.string().optional(),
 });
 
 const companySchema = z.object({
@@ -96,7 +97,10 @@ function StudentForm({
   const onSubmit = async (data: StudentData) => {
     setServerError("");
     try {
-      await createStudent(data);
+      await createStudent({
+        ...data,
+        whatsappPhone: data.whatsappPhone?.trim() || undefined,
+      });
       onSuccess();
     } catch (err: unknown) {
       const msg =
@@ -240,6 +244,16 @@ function StudentForm({
             </p>
           )}
         </div>
+      </div>
+
+      <div>
+        <label className={labelClass}>WhatsApp (opcional)</label>
+        <input
+          {...register("whatsappPhone")}
+          type="tel"
+          className={inputClass}
+          placeholder="Ex.: 31999999999"
+        />
       </div>
 
       <div>

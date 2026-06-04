@@ -95,6 +95,7 @@ interface ProfessorFormValues {
   cpf: string;
   department: string;
   institutionId: string;
+  whatsappPhone: string;
 }
 
 function ProfessorFormModal({
@@ -115,6 +116,7 @@ function ProfessorFormModal({
     cpf: professor?.cpf ?? "",
     department: professor?.department ?? "",
     institutionId: professor?.institutionId ?? (institutions[0]?.id ?? ""),
+    whatsappPhone: "",
   });
   const [errors, setErrors] = useState<Partial<ProfessorFormValues>>({});
   const [apiError, setApiError] = useState("");
@@ -158,6 +160,7 @@ function ProfessorFormModal({
           cpf: form.cpf.replace(/\D/g, ""),
           department: form.department.trim(),
           institutionId: form.institutionId,
+          whatsappPhone: form.whatsappPhone.trim() || undefined,
         });
       }
       onSuccess(result);
@@ -272,10 +275,22 @@ function ProfessorFormModal({
         </Field>
 
         {!isEdit && (
-          <p className="text-xs text-muted-foreground">
-            Uma senha temporária será gerada automaticamente e enviada ao
-            e-mail do professor com instruções para redefinição.
-          </p>
+          <>
+            <Field id="prof-whatsapp" label="WhatsApp (opcional)">
+              <input
+                id="prof-whatsapp"
+                type="tel"
+                value={form.whatsappPhone}
+                onChange={(e) => set("whatsappPhone", e.target.value)}
+                placeholder="Ex.: 31999999999"
+                className={inputClass}
+              />
+            </Field>
+            <p className="text-xs text-muted-foreground">
+              Uma senha temporária será gerada automaticamente e enviada ao
+              e-mail do professor com instruções para redefinição.
+            </p>
+          </>
         )}
       </form>
     </Modal>

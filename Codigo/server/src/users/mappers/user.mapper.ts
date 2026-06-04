@@ -52,6 +52,7 @@ export class UserMapper {
       email: user.email,
       role: user.role,
       coinBalance: user.coinBalance,
+      whatsappPhone: user.whatsappPhone ?? null,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

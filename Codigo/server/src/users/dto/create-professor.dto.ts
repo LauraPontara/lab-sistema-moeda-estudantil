@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsUUID,
   MaxLength,
@@ -31,4 +32,9 @@ export class CreateProfessorDto {
 
   @IsUUID()
   institutionId!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(20)
+  whatsappPhone?: string;
 }

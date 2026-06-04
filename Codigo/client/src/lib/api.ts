@@ -213,6 +213,7 @@ export async function createStudent(payload: {
   cep: string;
   institutionId: string;
   course: string;
+  whatsappPhone?: string;
 }) {
   const { data } = await api.post("/students", payload);
   return data;
@@ -310,6 +311,7 @@ export async function createProfessor(payload: {
   cpf: string;
   department: string;
   institutionId: string;
+  whatsappPhone?: string;
 }): Promise<ProfessorModel> {
   const { data } = await api.post<ProfessorModel>("/professors", payload);
   return data;

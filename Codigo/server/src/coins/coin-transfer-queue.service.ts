@@ -4,6 +4,7 @@ import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DATABASE_CONNECTION } from '../database/database.constants';
 import * as schema from '../database/schemas';
 import { EmailService } from '../email/email.service';
+import { WhatsAppService } from '../whatsapp/whatsapp.service';
 import { CoinTransferEvent } from './coin-transfer-event.type';
 
 type Database = PostgresJsDatabase<typeof schema>;
@@ -22,6 +23,7 @@ export class CoinTransferQueueService implements OnModuleInit {
   constructor(
     @Inject(DATABASE_CONNECTION) private readonly db: Database,
     private readonly emailService: EmailService,
+    private readonly whatsappService: WhatsAppService,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -38,7 +40,7 @@ export class CoinTransferQueueService implements OnModuleInit {
         'Falha ao publicar evento de transferencia na fila PGMQ.',
         error,
       );
-      await this.sendTransferEmails(event);
+      await this.sendTransferNotifications(event);
     }
   }
 
@@ -61,7 +63,7 @@ export class CoinTransferQueueService implements OnModuleInit {
 
       for (const row of rows) {
         try {
-          await this.sendTransferEmails(row.message);
+          await this.sendTransferNotifications(row.message);
           await this.db.execute(
             sql`select * from pgmq.delete(${this.queueName}::text, ${row.msg_id}::bigint)`,
           );
@@ -103,7 +105,7 @@ export class CoinTransferQueueService implements OnModuleInit {
     }
   }
 
-  private async sendTransferEmails(event: CoinTransferEvent): Promise<void> {
+  private async sendTransferNotifications(event: CoinTransferEvent): Promise<void> {
     await Promise.all([
       this.emailService.sendCoinsSentConfirmation({
         to: event.professor.email,
@@ -115,6 +117,22 @@ export class CoinTransferQueueService implements OnModuleInit {
       }),
       this.emailService.sendCoinsReceivedNotification({
         to: event.student.email,
+        studentName: event.student.name,
+        professorName: event.professor.name,
+        amount: event.amount,
+        reason: event.message,
+        balanceAfter: event.student.balanceAfter,
+      }),
+      this.whatsappService.sendCoinsSentConfirmation({
+        phone: event.professor.whatsappPhone,
+        professorName: event.professor.name,
+        studentName: event.student.name,
+        amount: event.amount,
+        reason: event.message,
+        balanceAfter: event.professor.balanceAfter,
+      }),
+      this.whatsappService.sendCoinsReceivedNotification({
+        phone: event.student.whatsappPhone,
         studentName: event.student.name,
         professorName: event.professor.name,
         amount: event.amount,

@@ -38,6 +38,7 @@ export class CoinsRepository {
           email: users.email,
           role: users.role,
           coinBalance: users.coinBalance,
+          whatsappPhone: users.whatsappPhone,
           name: professorProfiles.name,
           institutionId: professorProfiles.institutionId,
         })
@@ -60,6 +61,7 @@ export class CoinsRepository {
           email: users.email,
           role: users.role,
           coinBalance: users.coinBalance,
+          whatsappPhone: users.whatsappPhone,
           name: studentProfiles.name,
           institutionId: studentProfiles.institutionId,
         })
@@ -137,12 +139,14 @@ export class CoinsRepository {
             id: professor.userId,
             name: professor.name,
             email: professor.email,
+            whatsappPhone: professor.whatsappPhone ?? null,
             balanceAfter: updatedProfessor.coinBalance,
           },
           student: {
             id: student.userId,
             name: student.name,
             email: student.email,
+            whatsappPhone: student.whatsappPhone ?? null,
             balanceAfter: updatedStudent?.coinBalance ?? student.coinBalance,
           },
         },

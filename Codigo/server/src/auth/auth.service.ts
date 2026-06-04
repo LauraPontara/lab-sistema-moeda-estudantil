@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { InvalidCredentialsException } from '../common/exceptions/invalid-credentials.exception';
 import { EmailService } from '../email/email.service';
+import { WhatsAppService } from '../whatsapp/whatsapp.service';
 import { UserMapper } from '../users/mappers/user.mapper';
 import { UsersService } from '../users/users.service';
 import { UserRole } from '../database/schemas';
@@ -20,6 +21,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
+    private readonly whatsappService: WhatsAppService,
   ) {}
 
   async login(dto: LoginDto): Promise<AuthResponseDto> {
@@ -96,10 +98,18 @@ export class AuthService {
       { expiresIn: '1h', secret: process.env.RESET_PASSWORD_SECRET },
     );
 
+    const resetLink = `${process.env.FRONTEND_URL}/redefinir-senha?token=${resetToken}`;
+
     void this.emailService.sendPasswordReset({
       to: user.email,
       name: user.email,
       resetToken,
+    });
+
+    void this.whatsappService.sendPasswordReset({
+      phone: user.whatsappPhone,
+      name: user.email,
+      resetLink,
     });
 
     return { message: GENERIC_MSG };

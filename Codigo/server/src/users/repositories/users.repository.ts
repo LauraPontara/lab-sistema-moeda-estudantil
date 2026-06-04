@@ -174,6 +174,7 @@ export class UsersRepository {
           email: dto.email,
           passwordHash,
           role: UserRole.STUDENT,
+          whatsappPhone: dto.whatsappPhone ?? null,
         })
         .returning();
 
@@ -236,6 +237,7 @@ export class UsersRepository {
           passwordHash,
           role: UserRole.PROFESSOR,
           coinBalance: 1000,
+          whatsappPhone: dto.whatsappPhone ?? null,
         })
         .returning();
 

@@ -9,6 +9,7 @@ import { UserRole } from '../database/schemas';
 import { EmailAlreadyInUseException } from '../common/exceptions/email-already-in-use.exception';
 import { generateTemporaryPassword } from '../common/utils/password.util';
 import { EmailService } from '../email/email.service';
+import { WhatsAppService } from '../whatsapp/whatsapp.service';
 import { InstitutionsService } from '../institutions/institutions.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { CreatePartnerCompanyDto } from './dto/create-partner-company.dto';
@@ -30,6 +31,7 @@ export class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly emailService: EmailService,
+    private readonly whatsappService: WhatsAppService,
     private readonly jwtService: JwtService,
     private readonly institutionsService: InstitutionsService,
   ) {}
@@ -115,11 +117,20 @@ export class UsersService {
       { expiresIn: '24h', secret: process.env.RESET_PASSWORD_SECRET },
     );
 
+    const resetLink = `${process.env.FRONTEND_URL}/redefinir-senha?token=${resetToken}`;
+
     void this.emailService.sendProfessorWelcome({
       to: dto.email,
       name: dto.name,
       temporaryPassword,
       resetToken,
+    });
+
+    void this.whatsappService.sendProfessorWelcome({
+      phone: dto.whatsappPhone,
+      name: dto.name,
+      temporaryPassword,
+      resetLink,
     });
 
     return UserMapper.toProfessorModel(professor);
