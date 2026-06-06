@@ -2,47 +2,13 @@
   "version": "7",
   "dialect": "postgresql",
   "entries": [
-    {
-      "idx": 0,
-      "version": "7",
-      "when": 1777845690568,
-      "tag": "0000_mushy_senator_kelly",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1777847625562,
-      "tag": "0001_confused_punisher",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1778208000000,
-      "tag": "0002_late_paper_doll",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1779042003883,
-      "tag": "0003_big_trauma",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1779045600000,
-      "tag": "0004_supabase_queue_setup",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1780581282074,
-      "tag": "0005_striped_quicksilver",
-      "breakpoints": true
-    }
+    { "idx": 0, "version": "7", "when": 1777845690568, "tag": "0000_mushy_senator_kelly", "breakpoints": true },
+    { "idx": 1, "version": "7", "when": 1777847625562, "tag": "0001_confused_punisher", "breakpoints": true },
+    { "idx": 2, "version": "7", "when": 1778208000000, "tag": "0002_late_paper_doll", "breakpoints": true },
+    { "idx": 3, "version": "7", "when": 1779042003883, "tag": "0003_big_trauma", "breakpoints": true },
+    { "idx": 4, "version": "7", "when": 1779045600000, "tag": "0004_supabase_queue_setup", "breakpoints": true },
+    { "idx": 5, "version": "7", "when": 1780581282074, "tag": "0005_striped_quicksilver", "breakpoints": true },
+    { "idx": 6, "version": "7", "when": 1779565379244, "tag": "0006_modern_the_leader", "breakpoints": true },
+    { "idx": 7, "version": "7", "when": 1779567000000, "tag": "0007_advantage_redemption_queue", "breakpoints": true }
   ]
 }

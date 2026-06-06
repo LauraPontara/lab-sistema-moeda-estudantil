@@ -3,7 +3,10 @@ import { and, desc, eq, gte, sql } from 'drizzle-orm';
 import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DATABASE_CONNECTION } from '../database/database.constants';
 import {
+  advantageRedemptions,
+  advantages,
   coinTransfers,
+  partnerCompanyProfiles,
   professorProfiles,
   professorSemesterAllowances,
   studentProfiles,
@@ -223,7 +226,7 @@ export class CoinsRepository {
       return null;
     }
 
-    const rows = await this.db
+    const transferRows = await this.db
       .select({
         id: coinTransfers.id,
         amount: coinTransfers.amount,
@@ -242,10 +245,31 @@ export class CoinsRepository {
       .where(eq(coinTransfers.studentId, studentId))
       .orderBy(desc(coinTransfers.createdAt));
 
-    return {
-      role: student.role,
-      balance: student.balance,
-      entries: rows.map((row) => ({
+    const redemptionRows = await this.db
+      .select({
+        id: advantageRedemptions.id,
+        amount: advantageRedemptions.xpSpent,
+        message: advantages.title,
+        createdAt: advantageRedemptions.createdAt,
+        counterpartId: advantages.companyId,
+        counterpartName: partnerCompanyProfiles.tradeName,
+        counterpartEmail: users.email,
+      })
+      .from(advantageRedemptions)
+      .innerJoin(
+        advantages,
+        eq(advantages.id, advantageRedemptions.advantageId),
+      )
+      .innerJoin(
+        partnerCompanyProfiles,
+        eq(partnerCompanyProfiles.userId, advantages.companyId),
+      )
+      .innerJoin(users, eq(users.id, advantages.companyId))
+      .where(eq(advantageRedemptions.studentId, studentId))
+      .orderBy(desc(advantageRedemptions.createdAt));
+
+    const entries = [
+      ...transferRows.map((row) => ({
         id: row.id,
         amount: row.amount,
         message: row.message,
@@ -255,6 +279,22 @@ export class CoinsRepository {
         counterpartName: row.counterpartName,
         counterpartEmail: row.counterpartEmail,
       })),
+      ...redemptionRows.map((row) => ({
+        id: row.id,
+        amount: row.amount,
+        message: row.message,
+        createdAt: row.createdAt,
+        direction: 'OUT' as const,
+        counterpartId: row.counterpartId,
+        counterpartName: row.counterpartName,
+        counterpartEmail: row.counterpartEmail,
+      })),
+    ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    return {
+      role: student.role,
+      balance: student.balance,
+      entries,
     };
   }
 

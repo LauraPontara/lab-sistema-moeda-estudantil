@@ -1,3 +1,4 @@
+import type { AdvantageCategory, AdvantageIcon } from "@/lib/advantages";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -137,6 +138,26 @@ export interface CoinStatement {
   entries: CoinStatementEntry[];
 }
 
+export interface AdvantageCard {
+  id: string;
+  companyId: string;
+  companyName: string;
+  title: string;
+  description: string;
+  category: AdvantageCategory;
+  icon: AdvantageIcon;
+  costXp: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RedeemResult {
+  message: string;
+  couponCode: string;
+  balance: number;
+}
+
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
 export async function login(email: string, password: string) {
@@ -199,6 +220,38 @@ export async function updateInstitution(
 
 export async function deleteInstitution(id: string): Promise<void> {
   await api.delete(`/institutions/${id}`);
+}
+
+// ── Advantages ────────────────────────────────────────────────────────────────
+
+export async function getAdvantages(): Promise<AdvantageCard[]> {
+  const { data } = await api.get<AdvantageCard[]>("/advantages");
+  return data;
+}
+
+export async function getMyAdvantages(): Promise<AdvantageCard[]> {
+  const { data } = await api.get<AdvantageCard[]>("/advantages/mine");
+  return data;
+}
+
+export async function createAdvantage(payload: {
+  title: string;
+  description: string;
+  category: AdvantageCategory;
+  icon: AdvantageIcon;
+  costXp: number;
+}): Promise<AdvantageCard> {
+  const { data } = await api.post<AdvantageCard>("/advantages", payload);
+  return data;
+}
+
+export async function deleteAdvantage(id: string): Promise<void> {
+  await api.delete(`/advantages/${id}`);
+}
+
+export async function redeemAdvantage(id: string): Promise<RedeemResult> {
+  const { data } = await api.post<RedeemResult>(`/advantages/${id}/redemptions`);
+  return data;
 }
 
 // ── Students ──────────────────────────────────────────────────────────────────
