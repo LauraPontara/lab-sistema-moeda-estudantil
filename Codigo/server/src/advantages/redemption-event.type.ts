@@ -11,11 +11,13 @@ export interface RedemptionEvent {
     id: string;
     name: string;
     email: string;
+    whatsappPhone: string | null;
     balanceAfter: number;
   };
   company: {
     id: string;
     tradeName: string;
     email: string;
+    whatsappPhone: string | null;
   };
 }

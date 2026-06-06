@@ -127,4 +127,52 @@ export class WhatsAppService {
 
     await this.sendText(params.phone, text);
   }
+
+  async sendRedemptionCouponToStudent(params: {
+    phone: string | null | undefined;
+    studentName: string;
+    advantageTitle: string;
+    companyName: string;
+    couponCode: string;
+    balanceAfter: number;
+  }): Promise<void> {
+    const text = [
+      `💰 *Sistema de Moeda Estudantil*`,
+      ``,
+      `🎟️ *Vantagem resgatada!*`,
+      ``,
+      `Olá, *${params.studentName}*!`,
+      `Seu resgate de *${params.advantageTitle}* foi confirmado com a empresa *${params.companyName}*.`,
+      ``,
+      `🔑 *Cupom:* \`${params.couponCode}\``,
+      `💼 *Saldo atual:* ${params.balanceAfter} XP`,
+      ``,
+      `Apresente este cupom à empresa para ativar sua vantagem.`,
+    ].join('\n');
+
+    await this.sendText(params.phone, text);
+  }
+
+  async sendRedemptionNotificationToCompany(params: {
+    phone: string | null | undefined;
+    companyName: string;
+    studentName: string;
+    advantageTitle: string;
+    couponCode: string;
+  }): Promise<void> {
+    const text = [
+      `💰 *Sistema de Moeda Estudantil*`,
+      ``,
+      `✅ *Novo resgate realizado!*`,
+      ``,
+      `Olá, *${params.companyName}*!`,
+      `O aluno *${params.studentName}* resgatou a vantagem *${params.advantageTitle}*.`,
+      ``,
+      `🔑 *Cupom gerado:* \`${params.couponCode}\``,
+      ``,
+      `Valide o código com o aluno antes de liberar a vantagem.`,
+    ].join('\n');
+
+    await this.sendText(params.phone, text);
+  }
 }

@@ -33,12 +33,14 @@ const redemptionEvent = (): RedemptionEvent => ({
     id: 'student-1',
     name: 'Aluno Teste',
     email: 'aluno@gmail.com',
+    whatsappPhone: null,
     balanceAfter: 50,
   },
   company: {
     id: 'company-1',
     tradeName: 'Café da Esquina',
     email: 'empresa@gmail.com',
+    whatsappPhone: null,
   },
 });
 

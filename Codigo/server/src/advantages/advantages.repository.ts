@@ -150,6 +150,7 @@ export class AdvantagesRepository {
         .select({
           id: users.id,
           email: users.email,
+          whatsappPhone: users.whatsappPhone,
           role: users.role,
           coinBalance: users.coinBalance,
           name: studentProfiles.name,
@@ -173,6 +174,7 @@ export class AdvantagesRepository {
           id: advantages.id,
           companyId: advantages.companyId,
           companyEmail: users.email,
+          companyWhatsappPhone: users.whatsappPhone,
           companyTradeName: partnerCompanyProfiles.tradeName,
           title: advantages.title,
           costXp: advantages.costXp,
@@ -259,12 +261,14 @@ export class AdvantagesRepository {
             id: student.id,
             name: student.name,
             email: student.email,
+            whatsappPhone: student.whatsappPhone,
             balanceAfter: updatedStudent.coinBalance,
           },
           company: {
             id: advantage.companyId,
             tradeName: advantage.companyTradeName,
             email: advantage.companyEmail,
+            whatsappPhone: advantage.companyWhatsappPhone,
           },
         },
       };

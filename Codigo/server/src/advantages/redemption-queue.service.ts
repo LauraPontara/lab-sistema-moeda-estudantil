@@ -4,6 +4,7 @@ import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DATABASE_CONNECTION } from '../database/database.constants';
 import * as schema from '../database/schemas';
 import { EmailService } from '../email/email.service';
+import { WhatsAppService } from '../whatsapp/whatsapp.service';
 import { RedemptionEvent } from './redemption-event.type';
 
 type Database = PostgresJsDatabase<typeof schema>;
@@ -23,6 +24,7 @@ export class RedemptionQueueService implements OnModuleInit {
   constructor(
     @Inject(DATABASE_CONNECTION) private readonly db: Database,
     private readonly emailService: EmailService,
+    private readonly whatsappService: WhatsAppService,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -117,6 +119,21 @@ export class RedemptionQueueService implements OnModuleInit {
       }),
       this.emailService.sendRedemptionNotificationToCompany({
         to: event.company.email,
+        companyName: event.company.tradeName,
+        studentName: event.student.name,
+        advantageTitle: event.advantage.title,
+        couponCode: event.couponCode,
+      }),
+      this.whatsappService.sendRedemptionCouponToStudent({
+        phone: event.student.whatsappPhone,
+        studentName: event.student.name,
+        advantageTitle: event.advantage.title,
+        companyName: event.company.tradeName,
+        couponCode: event.couponCode,
+        balanceAfter: event.student.balanceAfter,
+      }),
+      this.whatsappService.sendRedemptionNotificationToCompany({
+        phone: event.company.whatsappPhone,
         companyName: event.company.tradeName,
         studentName: event.student.name,
         advantageTitle: event.advantage.title,
