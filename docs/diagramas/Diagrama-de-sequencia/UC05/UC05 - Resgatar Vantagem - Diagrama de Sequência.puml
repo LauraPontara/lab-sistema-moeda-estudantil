@@ -5,8 +5,10 @@ actor "Aluno" as A
 actor "Empresa\nParceira" as E
 participant "Resgate" as PR
 participant "Sistema de\nVantagens" as SV
-queue "Fila de\nMensagens" as FM
+participant "Agendador\n(NestJS Cron)" as CRON
+queue "Fila de\nMensagens\n(PGMQ)" as FM
 participant "Serviço de\nEmail" as SE
+participant "Serviço de\nWhatsApp" as WA
 database "Banco de\nDados" as BD
 
 == 1. Confirmação do Resgate ==
@@ -32,6 +34,7 @@ deactivate BD
 
 alt Saldo insuficiente
     SV --> PR: 2.4 erroSaldoInsuficiente(saldoAtual, custoMoedas)
+    deactivate SV
     activate PR
     PR --> A: 2.5 exibirErro("Saldo insuficiente para resgatar esta vantagem")
     deactivate PR
@@ -42,9 +45,9 @@ else Saldo suficiente
     activate BD
     BD --> SV: 2.8 resgateConfirmado
     deactivate BD
-    SV -> FM: 2.9 publicarNotificacao(cupomCodigo, studentEmail, empresaEmail)
+    SV -> FM: 2.9 pgmq.send(advantage_redemption_events, evento)
     activate FM
-    FM --> SV: 2.10 mensagemEnfileirada
+    FM --> SV: 2.10 eventoEnfileirado
     deactivate FM
     SV --> PR: 2.11 resgateRealizado(cupomCodigo)
     deactivate SV
@@ -53,13 +56,44 @@ else Saldo suficiente
     deactivate PR
 end
 
+== 3. Processamento Assíncrono das Notificações ==
 
-== 3. Notificação (Assíncrona) ==
-
-FM -> SE: 3.1 processarNotificacao(cupomCodigo, studentEmail, empresaEmail)
-activate SE
-SE ->> A: 3.2 emailCupomAluno(cupomCodigo, instrucoes)
-SE ->> E: 3.3 emailCupomEmpresa(cupomCodigo, dadosAluno)
-deactivate SE
+loop A cada 1 minuto
+    CRON -> SV: 3.1 consumePendingRedemptions()
+    activate SV
+    SV -> FM: 3.2 pgmq.read(advantage_redemption_events, batchSize=10)
+    activate FM
+    FM --> SV: 3.3 eventos pendentes
+    deactivate FM
+    alt Fila vazia
+        deactivate SV
+    else Há eventos pendentes
+        SV -> SE: 3.4 sendRedemptionCouponToStudent(alunoEmail, cupomCodigo, nomeVantagem)
+        activate SE
+        SE -->> A: 3.5 email com código do cupom
+        SE --> SV: 3.6 enviado
+        deactivate SE
+        SV -> WA: 3.7 sendRedemptionCouponToStudent(alunoPhone, cupomCodigo, nomeVantagem)
+        activate WA
+        WA -->> A: 3.8 WhatsApp com código do cupom
+        WA --> SV: 3.9 enviado
+        deactivate WA
+        SV -> SE: 3.10 sendRedemptionNotificationToCompany(empresaEmail, cupomCodigo, nomeAluno)
+        activate SE
+        SE -->> E: 3.11 email de notificação de resgate
+        SE --> SV: 3.12 enviado
+        deactivate SE
+        SV -> WA: 3.13 sendRedemptionNotificationToCompany(empresaPhone, cupomCodigo, nomeAluno)
+        activate WA
+        WA -->> E: 3.14 WhatsApp de notificação de resgate
+        WA --> SV: 3.15 enviado
+        deactivate WA
+        SV -> FM: 3.16 pgmq.delete(msg_id)
+        activate FM
+        FM --> SV: 3.17 deletado
+        deactivate FM
+        deactivate SV
+    end
+end
 
 @enduml

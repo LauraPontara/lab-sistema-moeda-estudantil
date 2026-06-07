@@ -174,7 +174,7 @@ Supabase / PostgreSQL (Banco de Dados)
 | Diagrama de Componentes  | [Diagrama de componentes.png](./docs/diagramas/Diagrama-de-componentes/Diagrama%20de%20componentes.png)            |
 | Modelo ER (ERD)          | [Modelo-ERD.png](./docs/diagramas/Modelo-relacionamento-entidade/Modelo-ERD.png)                                    |
 | Modelo Lógico            | [Diagrama-logico.png](./docs/diagramas/Modelo-relacionamento-entidade/Diagrama-logico.png)                          |
-| Diagramas de Sequência   | [UC01](./docs/diagramas/Diagrama-de-sequencia/UC01/UC01-FazerLogin.png) · [UC02](./docs/diagramas/Diagrama-de-sequencia/UC02/UC02-GerenciarAluno.png) · [UC03](./docs/diagramas/Diagrama-de-sequencia/UC03/UC03-ConsultarExtrato.png) · [UC04](./docs/diagramas/Diagrama-de-sequencia/UC04/UC04-VisualizarVantagens.png) · [UC05](./docs/diagramas/Diagrama-de-sequencia/UC05/UC05-ResgatarVantagens.png) · [UC06](./docs/diagramas/Diagrama-de-sequencia/UC06/UC06-ReceberCodigoDoCupom.png) · [UC07](./docs/diagramas/Diagrama-de-sequencia/UC07/UC07-EnviarMoedas.png) · [UC08](./docs/diagramas/Diagrama-de-sequencia/UC08/UC08-Receber1000Moedas.png) · [UC09](./docs/diagramas/Diagrama-de-sequencia/UC09/UC09-GerenciarEmpresa.png) · [UC10](./docs/diagramas/Diagrama-de-sequencia/UC10/UC10-GerenciarVantagens.png) · [UC11](./docs/diagramas/Diagrama-de-sequencia/UC11/UC11-GerenciarProfessor.png) · [UC12](./docs/diagramas/Diagrama-de-sequencia/UC12/UC12-GerenciarInstituicaoEstudantil.png) |
+| Diagramas de Sequência   | [Geral](./docs/diagramas/Diagrama-de-sequencia/Geral/DiagramaSequenciaGeral.png) · [UC01](./docs/diagramas/Diagrama-de-sequencia/UC01/UC01-FazerLogin.png) · [UC02](./docs/diagramas/Diagrama-de-sequencia/UC02/UC02-GerenciarAluno.png) · [UC03](./docs/diagramas/Diagrama-de-sequencia/UC03/UC03-ConsultarExtrato.png) · [UC04](./docs/diagramas/Diagrama-de-sequencia/UC04/UC04-VisualizarVantagens.png) · [UC05](./docs/diagramas/Diagrama-de-sequencia/UC05/UC05-ResgatarVantagens.png) · [UC06](./docs/diagramas/Diagrama-de-sequencia/UC06/UC06-ReceberCodigoDoCupom.png) · [UC07](./docs/diagramas/Diagrama-de-sequencia/UC07/UC07-EnviarMoedas.png) · [UC08](./docs/diagramas/Diagrama-de-sequencia/UC08/UC08-Receber1000Moedas.png) · [UC09](./docs/diagramas/Diagrama-de-sequencia/UC09/UC09-GerenciarEmpresa.png) · [UC10](./docs/diagramas/Diagrama-de-sequencia/UC10/UC10-GerenciarVantagens.png) · [UC11](./docs/diagramas/Diagrama-de-sequencia/UC11/UC11-GerenciarProfessor.png) · [UC12](./docs/diagramas/Diagrama-de-sequencia/UC12/UC12-GerenciarInstituicaoEstudantil.png) |
 
 ### Diagrama de Caso de Uso
 
@@ -207,6 +207,12 @@ Fonte editável: [er_sistema_moeda_estudantil.drawio](./docs/diagramas/Modelo-re
 ### Diagramas de Sequência
 
 Os diagramas de sequência cobrem os 12 casos de uso do sistema, organizados por caso de uso. Os arquivos-fonte `.puml` estão disponíveis em cada subpasta de `/docs/diagramas/Diagrama-de-sequencia/`.
+
+---
+
+#### Diagrama de Sequência Geral
+
+![Diagrama de Sequência Geral](./docs/diagramas/Diagrama-de-sequencia/Geral/DiagramaSequenciaGeral.png)
 
 ---
 

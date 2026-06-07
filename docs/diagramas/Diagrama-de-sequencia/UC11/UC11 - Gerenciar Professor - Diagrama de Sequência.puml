@@ -2,9 +2,12 @@
 title Sistema de Moeda Estudantil - UC11 - Gerenciar Professor
 
 actor "Admin" as ADM
+actor "Professor" as PROF
 participant "Módulo de\nAdmin" as MA
 participant "Sistema de\nProfessores" as SP
 participant "Sistema de\nInstituições" as SI
+participant "Serviço de\nEmail" as SE
+participant "Serviço de\nWhatsApp" as WA
 database "Banco de\nDados" as BD
 
 == 1. Acesso à Lista de Professores ==
@@ -37,40 +40,48 @@ deactivate SI
 SP --> ADM: 2.6 exibirFormulario(listaInstituicoes)
 deactivate SP
 
-ADM -> SP: 2.7 preencherFormulario(nome, email, senha, cpf, departamento, instituicaoId)
+ADM -> SP: 2.7 preencherFormulario(nome, email, cpf, departamento, instituicaoId, whatsappPhone)
 activate SP
 
 alt Campos obrigatórios não preenchidos
     SP --> ADM: 2.8 exibirErro("Preencha todos os campos obrigatórios")
+    deactivate SP
 
 else CPF em formato inválido
     SP --> ADM: 2.9 exibirErroCampo("cpf", "Formato de CPF inválido")
+    deactivate SP
 
 else Dados válidos
     SP --> ADM: 2.10 exibirCarregando()
-    deactivate SP
-end
-
-SP -> SP: 2.11 cadastrarProfessor(dadosProfessor)
-activate SP
-SP -> BD: 2.12 verificarEmailDisponivel(email)
-activate BD
-BD --> SP: 2.13 resultado
-deactivate BD
-
-alt Email já cadastrado
-    SP --> ADM: 2.15 exibirErro("Este email já está em uso")
-
-
-else Email disponível
-    SP -> SP: 2.16 hashSenha(senha)
-    SP -> BD: 2.17 criarProfessor(dadosProfessor)
+    SP -> SP: 2.11 gerarSenhaTemporaria()
+    SP -> SP: 2.12 gerarResetToken(expiresIn=24h)
+    SP -> BD: 2.13 verificarEmailDisponivel(email)
     activate BD
-    BD --> SP: 2.18 professorCriado
+    BD --> SP: 2.14 resultado
     deactivate BD
-    SP --> ADM: 2.20 exibirSucesso("Professor cadastrado com sucesso")
-    deactivate SP
-   
+
+    alt Email já cadastrado
+        SP --> ADM: 2.15 exibirErro("Este email já está em uso")
+        deactivate SP
+
+    else Email disponível
+        SP -> BD: 2.16 criarProfessor(dadosProfessor, passwordHash)
+        activate BD
+        BD --> SP: 2.17 professorCriado
+        deactivate BD
+        SP -> SE: 2.18 sendProfessorWelcome(email, nome, senhaTemporaria, resetLink)
+        activate SE
+        SE -->> PROF: 2.19 email de boas-vindas com senha temporária e link de redefinição (24h)
+        SE --> SP: 2.20 emailEnviado
+        deactivate SE
+        SP -> WA: 2.21 sendProfessorWelcome(phone, nome, senhaTemporaria, resetLink)
+        activate WA
+        WA -->> PROF: 2.22 WhatsApp de boas-vindas com senha temporária e link de redefinição (24h)
+        WA --> SP: 2.23 mensagemEnviada
+        deactivate WA
+        SP --> ADM: 2.24 exibirSucesso("Professor cadastrado com sucesso")
+        deactivate SP
+    end
 end
 
 == 3. Edição de Professor ==

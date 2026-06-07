@@ -5,11 +5,13 @@ actor "Professor" as P
 actor "Aluno" as A
 participant "Sistema\nEnvio" as PE
 participant "Sistema de\nMoedas" as SM
-queue "Fila de\nMensagens" as FM
+participant "Agendador\n(NestJS Cron)" as CRON
+queue "Fila de\nMensagens\n(PGMQ)" as FM
 participant "Serviço de\nEmail" as SE
+participant "Serviço de\nWhatsApp" as WA
 database "Banco de\nDados" as BD
 
-== 1. Acesso à Sistema Envio ==
+== 1. Acesso à Tela de Envio ==
 
 P -> PE: 1.1 acessarEnvioMoedas()
 activate PE
@@ -54,12 +56,14 @@ deactivate BD
 
 alt Saldo insuficiente
     SM --> PE: 3.4 erroSaldoInsuficiente(saldoAtual, quantidade)
+    deactivate SM
     activate PE
     PE --> P: 3.5 exibirErro("Saldo insuficiente para enviar esta quantidade de moedas")
     deactivate PE
 
 else Aluno não encontrado
     SM --> PE: 3.6 erroAlunoNaoEncontrado()
+    deactivate SM
     activate PE
     PE --> P: 3.7 exibirErro("Aluno não encontrado")
     deactivate PE
@@ -77,9 +81,9 @@ else Saldo suficiente e aluno válido
     activate BD
     BD --> SM: 3.13 transacaoRegistrada
     deactivate BD
-    SM -> FM: 3.14 publicarNotificacaoEnvio(alunoEmail, professorNome, quantidade, mensagem)
+    SM -> FM: 3.14 pgmq.send(coin_transfer_events, evento)
     activate FM
-    FM --> SM: 3.15 mensagemEnfileirada
+    FM --> SM: 3.15 eventoEnfileirado
     deactivate FM
     SM --> PE: 3.16 envioRealizado(novoSaldoProfessor)
     deactivate SM
@@ -88,11 +92,44 @@ else Saldo suficiente e aluno válido
     deactivate PE
 end
 
-== 4. Notificação ao Aluno (Assíncrona) ==
+== 4. Processamento Assíncrono das Notificações ==
 
-FM -> SE: 4.1 processarNotificacaoEnvio(alunoEmail, professorNome, quantidade, mensagem)
-activate SE
-SE -->> A: 4.2 emailRecebimentoMoedas(quantidade, professorNome, mensagem, novoSaldo)
-deactivate SE
+loop A cada 1 minuto
+    CRON -> SM: 4.1 consumePendingTransfers()
+    activate SM
+    SM -> FM: 4.2 pgmq.read(coin_transfer_events, batchSize=10)
+    activate FM
+    FM --> SM: 4.3 eventos pendentes
+    deactivate FM
+    alt Fila vazia
+        deactivate SM
+    else Há eventos pendentes
+        SM -> SE: 4.4 sendCoinsSentConfirmation(professorEmail, quantidade, novoSaldo)
+        activate SE
+        SE -->> P: 4.5 email de confirmação de envio
+        SE --> SM: 4.6 enviado
+        deactivate SE
+        SM -> WA: 4.7 sendCoinsSentConfirmation(professorPhone, quantidade, novoSaldo)
+        activate WA
+        WA -->> P: 4.8 WhatsApp de confirmação de envio
+        WA --> SM: 4.9 enviado
+        deactivate WA
+        SM -> SE: 4.10 sendCoinsReceivedNotification(alunoEmail, professorNome, quantidade, mensagem)
+        activate SE
+        SE -->> A: 4.11 email de recebimento de moedas
+        SE --> SM: 4.12 enviado
+        deactivate SE
+        SM -> WA: 4.13 sendCoinsReceivedNotification(alunoPhone, professorNome, quantidade, mensagem)
+        activate WA
+        WA -->> A: 4.14 WhatsApp de recebimento de moedas
+        WA --> SM: 4.15 enviado
+        deactivate WA
+        SM -> FM: 4.16 pgmq.delete(msg_id)
+        activate FM
+        FM --> SM: 4.17 deletado
+        deactivate FM
+        deactivate SM
+    end
+end
 
 @enduml

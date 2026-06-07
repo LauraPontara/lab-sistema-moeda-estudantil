@@ -1,0 +1,163 @@
+@startuml DiagramaSequenciaGeral
+title Sistema de Moeda Estudantil - Diagrama de Sequência Geral
+
+actor "Admin" as ADM
+actor "Professor" as P
+actor "Aluno" as A
+actor "Empresa\nParceira" as E
+participant "Agendador\n(NestJS Cron)" as CRON
+participant "Sistema\n(NestJS)" as SIS
+queue "Fila de Mensagens\n(PGMQ)" as PGMQ
+participant "Serviço de\nEmail" as EMAIL
+participant "Serviço de\nWhatsApp" as WA
+database "Banco de\nDados" as BD
+
+== 1. Configuração Inicial do Sistema ==
+
+ref over ADM, SIS, BD
+    UC12 - Gerenciar Instituição Estudantil
+end ref
+
+ref over ADM, SIS, BD
+    UC11 - Gerenciar Professor
+end ref
+
+== 2. Cadastro de Novos Usuários ==
+
+ref over A, SIS, BD
+    UC02 - Gerenciar Aluno
+end ref
+
+ref over ADM, E, SIS, BD
+    UC09 - Gerenciar Empresa Parceira
+end ref
+
+== 3. Autenticação ==
+
+ref over ADM, P, A, E, SIS, BD
+    UC01 - Fazer Login
+end ref
+
+== 4. Crédito Semestral de Moedas ==
+
+ref over CRON, SIS, BD
+    UC08 - Receber 1000 Moedas\n[Cron: 1º de cada mês, 05h00 (America/Sao_Paulo) | Trigger: inicialização do servidor]
+end ref
+
+== 5. Envio de Moedas ==
+
+ref over P, A, SIS, PGMQ, EMAIL, WA, BD
+    UC07 - Enviar Moedas
+end ref
+
+== 6. Processamento Assíncrono — Notificações de Transferência ==
+
+loop A cada 1 minuto (Cron)
+    CRON -> SIS : 6.1 consumePendingTransfers()
+    activate SIS
+    SIS -> PGMQ : 6.2 pgmq.read(coin_transfer_events, batchSize=10)
+    activate PGMQ
+    PGMQ --> SIS : 6.3 eventos pendentes
+    deactivate PGMQ
+    alt Fila vazia
+        deactivate SIS
+    else Há eventos pendentes
+        SIS -> EMAIL : 6.4 sendCoinsSentConfirmation(professorEmail, quantidade, novoSaldo)
+        activate EMAIL
+        EMAIL -->> P : 6.5 confirmação de envio de moedas (email)
+        EMAIL --> SIS : 6.6 enviado
+        deactivate EMAIL
+        SIS -> WA : 6.7 sendCoinsSentConfirmation(professorPhone, quantidade, novoSaldo)
+        activate WA
+        WA -->> P : 6.8 confirmação de envio de moedas (WhatsApp)
+        WA --> SIS : 6.9 enviado
+        deactivate WA
+        SIS -> EMAIL : 6.10 sendCoinsReceivedNotification(alunoEmail, professorNome, quantidade)
+        activate EMAIL
+        EMAIL -->> A : 6.11 notificação de recebimento de moedas (email)
+        EMAIL --> SIS : 6.12 enviado
+        deactivate EMAIL
+        SIS -> WA : 6.13 sendCoinsReceivedNotification(alunoPhone, professorNome, quantidade)
+        activate WA
+        WA -->> A : 6.14 notificação de recebimento de moedas (WhatsApp)
+        WA --> SIS : 6.15 enviado
+        deactivate WA
+        SIS -> PGMQ : 6.16 pgmq.delete(msg_id)
+        activate PGMQ
+        PGMQ --> SIS : 6.17 deletado
+        deactivate PGMQ
+        deactivate SIS
+    end
+end
+
+== 7. Consulta de Extrato ==
+
+ref over P, A, SIS, BD
+    UC03 - Consultar Extrato
+end ref
+
+== 8. Gerenciamento de Vantagens ==
+
+ref over E, SIS, BD
+    UC10 - Gerenciar Vantagens
+end ref
+
+== 9. Visualização de Vantagens ==
+
+ref over A, SIS, BD
+    UC04 - Visualizar Vantagens
+end ref
+
+== 10. Resgate de Vantagem ==
+
+ref over A, E, SIS, PGMQ, EMAIL, WA, BD
+    UC05 - Resgatar Vantagem
+end ref
+
+== 11. Processamento Assíncrono — Notificações de Resgate ==
+
+loop A cada 1 minuto (Cron)
+    CRON -> SIS : 11.1 consumePendingRedemptions()
+    activate SIS
+    SIS -> PGMQ : 11.2 pgmq.read(advantage_redemption_events, batchSize=10)
+    activate PGMQ
+    PGMQ --> SIS : 11.3 eventos pendentes
+    deactivate PGMQ
+    alt Fila vazia
+        deactivate SIS
+    else Há eventos pendentes
+        SIS -> EMAIL : 11.4 sendRedemptionCouponToStudent(alunoEmail, cupomCodigo, nomeVantagem)
+        activate EMAIL
+        EMAIL -->> A : 11.5 email com código do cupom
+        EMAIL --> SIS : 11.6 enviado
+        deactivate EMAIL
+        SIS -> WA : 11.7 sendRedemptionCouponToStudent(alunoPhone, cupomCodigo, nomeVantagem)
+        activate WA
+        WA -->> A : 11.8 WhatsApp com código do cupom
+        WA --> SIS : 11.9 enviado
+        deactivate WA
+        SIS -> EMAIL : 11.10 sendRedemptionNotificationToCompany(empresaEmail, cupomCodigo, nomeAluno)
+        activate EMAIL
+        EMAIL -->> E : 11.11 email de notificação de resgate
+        EMAIL --> SIS : 11.12 enviado
+        deactivate EMAIL
+        SIS -> WA : 11.13 sendRedemptionNotificationToCompany(empresaPhone, cupomCodigo, nomeAluno)
+        activate WA
+        WA -->> E : 11.14 WhatsApp de notificação de resgate
+        WA --> SIS : 11.15 enviado
+        deactivate WA
+        SIS -> PGMQ : 11.16 pgmq.delete(msg_id)
+        activate PGMQ
+        PGMQ --> SIS : 11.17 deletado
+        deactivate PGMQ
+        deactivate SIS
+    end
+end
+
+== 12. Recebimento do Código do Cupom ==
+
+ref over A, E, SIS, BD
+    UC06 - Receber Código do Cupom
+end ref
+
+@enduml
