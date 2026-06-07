@@ -196,5 +196,64 @@ export class EmailService {
       );
     }
   }
-}
 
+  async sendRedemptionCouponToStudent(params: {
+    to: string;
+    studentName: string;
+    advantageTitle: string;
+    companyName: string;
+    couponCode: string;
+    balanceAfter: number;
+  }): Promise<void> {
+    const body = `
+      <h2 style="margin:0 0 16px;font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;">Cupom de resgate 🎟️</h2>
+      <p style="margin:0 0 12px;">Olá, <strong>${params.studentName}</strong>!</p>
+      <p style="margin:0 0 12px;">Seu resgate de <strong>${params.advantageTitle}</strong> foi confirmado com a empresa <strong>${params.companyName}</strong>.</p>
+      <p style="margin:0 0 12px;"><strong>Cupom:</strong> ${codeBlock(params.couponCode)}</p>
+      <p style="margin:0;"><strong>Seu saldo atual:</strong> ${codeBlock(String(params.balanceAfter))} XP</p>
+    `;
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Sistema de Moedas" <${process.env.SMTP_USER}>`,
+        to: params.to,
+        subject: 'Seu cupom de resgate no Sistema de Moeda Estudantil',
+        html: emailWrapper(body),
+      });
+    } catch (error) {
+      this.logger.error(
+        `Falha ao enviar cupom de resgate para ${params.to}`,
+        error,
+      );
+    }
+  }
+
+  async sendRedemptionNotificationToCompany(params: {
+    to: string;
+    companyName: string;
+    studentName: string;
+    advantageTitle: string;
+    couponCode: string;
+  }): Promise<void> {
+    const body = `
+      <h2 style="margin:0 0 16px;font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;">Resgate realizado ✅</h2>
+      <p style="margin:0 0 12px;">Olá, <strong>${params.companyName}</strong>!</p>
+      <p style="margin:0 0 12px;">O aluno <strong>${params.studentName}</strong> resgatou a vantagem <strong>${params.advantageTitle}</strong>.</p>
+      <p style="margin:0;">Cupom gerado: ${codeBlock(params.couponCode)}</p>
+    `;
+
+    try {
+      await this.transporter.sendMail({
+        from: `"Sistema de Moedas" <${process.env.SMTP_USER}>`,
+        to: params.to,
+        subject: 'Nova confirmação de resgate no Sistema de Moeda Estudantil',
+        html: emailWrapper(body),
+      });
+    } catch (error) {
+      this.logger.error(
+        `Falha ao enviar notificação de resgate para ${params.to}`,
+        error,
+      );
+    }
+  }
+}

@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '../database/schemas';
 import { EmailAlreadyInUseException } from '../common/exceptions/email-already-in-use.exception';
+import { throwOnUniqueViolation } from '../common/exceptions/unique-constraint.util';
 import { generateTemporaryPassword } from '../common/utils/password.util';
 import { EmailService } from '../email/email.service';
 import { InstitutionsService } from '../institutions/institutions.service';
@@ -82,7 +83,9 @@ export class UsersService {
   async createStudent(dto: CreateStudentDto): Promise<StudentModel> {
     await this.ensureEmailIsAvailable(dto.email);
     const passwordHash = await this.hashPassword(dto.password);
-    const student = await this.usersRepository.createStudent(dto, passwordHash);
+    const student = await this.createOrThrowConflict(() =>
+      this.usersRepository.createStudent(dto, passwordHash),
+    );
     return UserMapper.toStudentModel(student);
   }
 
@@ -91,9 +94,8 @@ export class UsersService {
   ): Promise<PartnerCompanyModel> {
     await this.ensureEmailIsAvailable(dto.email);
     const passwordHash = await this.hashPassword(dto.password);
-    const partnerCompany = await this.usersRepository.createPartnerCompany(
-      dto,
-      passwordHash,
+    const partnerCompany = await this.createOrThrowConflict(() =>
+      this.usersRepository.createPartnerCompany(dto, passwordHash),
     );
     return UserMapper.toPartnerCompanyModel(partnerCompany);
   }
@@ -105,9 +107,8 @@ export class UsersService {
     const temporaryPassword = generateTemporaryPassword();
     const passwordHash = await this.hashPassword(temporaryPassword);
 
-    const professor = await this.usersRepository.createProfessor(
-      dto,
-      passwordHash,
+    const professor = await this.createOrThrowConflict(() =>
+      this.usersRepository.createProfessor(dto, passwordHash),
     );
 
     const resetToken = this.jwtService.sign(
@@ -128,9 +129,8 @@ export class UsersService {
   async createAdmin(dto: CreateAdminDto): Promise<AdministratorModel> {
     await this.ensureEmailIsAvailable(dto.email);
     const passwordHash = await this.hashPassword(dto.password);
-    const administrator = await this.usersRepository.createAdmin(
-      dto,
-      passwordHash,
+    const administrator = await this.createOrThrowConflict(() =>
+      this.usersRepository.createAdmin(dto, passwordHash),
     );
     return UserMapper.toAdministratorModel(administrator);
   }
@@ -200,10 +200,7 @@ export class UsersService {
     }
   }
 
-  async getProfile(
-    userId: string,
-    role: UserRole,
-  ): Promise<UserProfileModel> {
+  async getProfile(userId: string, role: UserRole): Promise<UserProfileModel> {
     switch (role) {
       case UserRole.STUDENT: {
         const student = await this.usersRepository.findStudentByUserId(userId);
@@ -256,6 +253,15 @@ export class UsersService {
     }
 
     return UserMapper.toProfessorModel(professor);
+  }
+
+  private async createOrThrowConflict<T>(op: () => Promise<T>): Promise<T> {
+    try {
+      return await op();
+    } catch (error) {
+      throwOnUniqueViolation(error);
+      throw error;
+    }
   }
 
   private async ensureEmailIsAvailable(
