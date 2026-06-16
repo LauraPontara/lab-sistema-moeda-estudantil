@@ -35,6 +35,7 @@ export const users = pgTable('users', {
   passwordHash: text('password_hash').notNull(),
   role: userRoleEnum('role').notNull(),
   coinBalance: integer('coin_balance').default(0).notNull(),
+  whatsappPhone: varchar('whatsapp_phone', { length: 20 }),
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),

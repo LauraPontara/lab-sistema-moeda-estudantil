@@ -7,12 +7,14 @@ export interface CoinTransferEvent {
     id: string;
     name: string;
     email: string;
+    whatsappPhone: string | null;
     balanceAfter: number;
   };
   student: {
     id: string;
     name: string;
     email: string;
+    whatsappPhone: string | null;
     balanceAfter: number;
   };
 }

@@ -5,6 +5,7 @@ export interface BaseUserModel {
   email: string;
   role: UserRole;
   coinBalance: number;
+  whatsappPhone: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

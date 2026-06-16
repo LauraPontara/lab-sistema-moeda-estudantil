@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsUUID,
   MaxLength,
@@ -52,4 +53,9 @@ export class CreateStudentDto {
   @IsNotEmpty()
   @MaxLength(120)
   course!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(20)
+  whatsappPhone?: string;
 }
