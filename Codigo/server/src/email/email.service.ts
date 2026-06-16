@@ -65,6 +65,9 @@ export class EmailService {
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT) || 587,
     secure: false,
+    // Força IPv4: o Render não tem saída IPv6 e o Gmail resolve para IPv6,
+    // causando ENETUNREACH ao conectar no SMTP.
+    family: 4,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
