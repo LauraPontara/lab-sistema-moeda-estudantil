@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 // Design-system color palette (inline for email clients)
 const DS = {
@@ -72,7 +73,7 @@ export class EmailService {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
-  });
+  } as SMTPTransport.Options);
 
   async sendProfessorWelcome(params: {
     to: string;
