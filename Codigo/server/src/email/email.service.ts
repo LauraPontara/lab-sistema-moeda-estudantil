@@ -64,8 +64,10 @@ export class EmailService {
 
   private transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: false,
+    port: Number(process.env.SMTP_PORT) || 465,
+    // Porta 465 usa SSL direto (secure: true); 587 usa STARTTLS (secure: false).
+    // No Render a 587 sofre timeout, então usamos 465.
+    secure: (Number(process.env.SMTP_PORT) || 465) === 465,
     // Força IPv4: o Render não tem saída IPv6 e o Gmail resolve para IPv6,
     // causando ENETUNREACH ao conectar no SMTP.
     family: 4,
