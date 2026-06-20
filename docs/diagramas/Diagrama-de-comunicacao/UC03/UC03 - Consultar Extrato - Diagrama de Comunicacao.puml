@@ -1,0 +1,19 @@
+@startuml diagrama-comunicacao-UC03-consultar-extrato
+left to right direction
+skinparam nodesep 80
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC03: Consultar Extrato
+
+actor     "Professor"       as P
+actor     "Aluno"           as A
+rectangle ": Extrato"       as PE
+rectangle ": SistemaMoedas" as SM
+database  ": BancoDeDados"  as BD
+
+P  -- PE : "1: → acessarExtrato()\n6: ← exibirExtrato(saldo, envios)"
+A  -- PE : "7: → acessarExtrato()\n12: ← exibirExtrato(saldo, recebimentos)"
+PE -- SM : "2: → buscarMeuExtrato(professorId)\n5: ← extrato()\n8: → buscarMeuExtrato(studentId)\n11: ← extrato()"
+SM -- BD : "3: → buscarEnvios(professorId)\n4: ← listaEnvios()\n9: → buscarRecebimentos(studentId)\n10: ← listaRecebimentos()"
+
+@enduml

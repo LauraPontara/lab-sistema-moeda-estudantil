@@ -1,0 +1,22 @@
+@startuml diagrama-comunicacao-UC09-gerenciar-empresa
+left to right direction
+skinparam nodesep 80
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC09: Gerenciar Empresa
+
+actor     "Admin"             as ADM
+actor     "Empresa\nParceira" as E
+rectangle ": SistemaCadastro" as FC
+rectangle ": MóduloAdmin"     as PA
+rectangle ": SistemaEmpresas" as SEmp
+database  ": BancoDeDados"    as BD
+
+E    -- FC   : "1: → cadastrarEmpresa(dados)\n6: ← redirecionarPara('/entrar')"
+FC   -- SEmp : "2: → cadastrarEmpresa(dados)\n5: ← empresaCriada()"
+E    -- SEmp : "7: → atualizarEmpresa(empresaId, campos)\n10: ← sucesso()"
+ADM  -- PA   : "11: → removerEmpresa(empresaId)\n16: ← sucesso()"
+PA   -- SEmp : "12: → excluirEmpresa(empresaId)\n15: ← confirmação()"
+SEmp -- BD   : "3: → criarEmpresa(dados)\n4: ← empresaCriada()\n8: → atualizarEmpresa(empresaId, campos)\n9: ← empresaAtualizada()\n13: → deletarEmpresa(empresaId)\n14: ← confirmação()"
+
+@enduml

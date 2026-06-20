@@ -1,0 +1,17 @@
+@startuml diagrama-comunicacao-UC04-visualizar-vantagens
+left to right direction
+skinparam nodesep 80
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC04: Visualizar Vantagens
+
+actor     "Aluno"              as A
+rectangle ": Vantagens"        as PV
+rectangle ": SistemaVantagens" as SV
+database  ": BancoDeDados"     as BD
+
+A  -- PV : "1: → acessarVantagens()\n6: ← exibirCatalogo(lista)\n7: → selecionarVantagem(id)\n12: ← exibirDetalhes(dados)"
+PV -- SV : "2: → buscarVantagens()\n5: ← listaVantagens()\n8: → buscarDetalhes(id)\n11: ← dadosVantagem()"
+SV -- BD : "3: → listarVantagensAtivas()\n4: ← listaVantagens()\n9: → buscarVantagemPorId(id)\n10: ← dadosVantagem()"
+
+@enduml

@@ -1,0 +1,42 @@
+@startuml diagrama-comunicacao-geral
+left to right direction
+skinparam nodesep 70
+skinparam ranksep 110
+skinparam shadowing false
+
+title Diagrama de Comunicação Geral - Sistema de Moeda Estudantil
+
+actor     "Admin"             as ADM
+actor     "Professor"         as P
+actor     "Aluno"             as A
+actor     "Empresa\nParceira" as E
+actor     "Agendador"         as CRON
+rectangle ": Sistema"            as SIS
+queue     ": FilaMensagens"      as FM
+rectangle ": ServiçoNotificação" as NOT
+database  ": BancoDeDados"       as BD
+
+' ordena a coluna de atores
+ADM -[hidden]down- P
+P   -[hidden]down- A
+A   -[hidden]down- E
+E   -[hidden]down- CRON
+
+' ----- Atores <-> Sistema -----
+ADM  -- SIS : "1: → login()\n2: → gerenciarInstituições()\n3: → gerenciarProfessores()\n4: → gerenciarEmpresas()\n5: → gerenciarAlunos()"
+P    -- SIS : "6: → login()\n7: → enviarMoedas(aluno, qtd, msg)\n8: → consultarExtrato()\n9: ← exibirSaldoEExtrato()"
+A    -- SIS : "10: → cadastrar()\n11: → login()\n12: → editarPerfil()\n13: → visualizarVantagens()\n14: → resgatarVantagem()\n15: ← exibirCupom()"
+E    -- SIS : "16: → cadastrar()\n17: → login()\n18: → gerenciarVantagens()"
+CRON -- SIS : "19: → creditarMoedasSemestral()\n20: → processarTransferências()\n21: → processarResgates()"
+
+' ----- Sistema <-> Infra -----
+SIS -- BD  : "22: → persistir / consultar()\n23: ← dados()"
+SIS -- FM  : "24: → enfileirarEvento()\n25: ← lerEventosPendentes()\n26: → removerEvento()"
+SIS -- NOT : "27: → notificarEnvioMoedas()\n28: → notificarRecebimento()\n29: → notificarCupom()\n30: → notificarResgateEmpresa()\n31: → notificarBoasVindas()\n32: → notificarCréditoSemestral()"
+
+' ----- Notificação -> Atores -----
+NOT -- P : "33: ← e-mail/WhatsApp"
+NOT -- A : "34: ← e-mail/WhatsApp"
+NOT -- E : "35: ← e-mail/WhatsApp"
+
+@enduml

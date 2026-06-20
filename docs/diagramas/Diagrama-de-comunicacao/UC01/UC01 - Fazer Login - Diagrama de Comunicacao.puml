@@ -1,0 +1,25 @@
+@startuml diagrama-comunicacao-UC01-login
+left to right direction
+skinparam nodesep 80
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC01: Fazer Login
+
+actor     "Usuário"                    as U
+rectangle ": Login"                    as TL
+rectangle ": ControladorAutenticação" as CC
+rectangle ": ServiçoAutenticação"     as SA
+database  ": BancoDeDados"             as BD
+
+U  -[hidden]right- TL
+TL -[hidden]right- CC
+CC -[hidden]right- SA
+SA -[hidden]right- BD
+
+U  -- TL : "1: → autenticar(email, senha)\n9: ← redirecionarPara('/painel')"
+TL -- CC : "2: → autenticar(email, senha)\n8: ← tokenEUsuario()"
+CC -- SA : "3: → login(email, senha)\n7: ← tokenEUsuario()"
+SA -- BD : "4: → buscarUsuario(email)\n5: ← dadosUsuario()"
+SA -- SA : "6: → validaSenha / geraJWT()"
+
+@enduml

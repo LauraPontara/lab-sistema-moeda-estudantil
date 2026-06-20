@@ -1,0 +1,22 @@
+@startuml diagrama-comunicacao-UC11-gerenciar-professor
+left to right direction
+skinparam nodesep 70
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC11: Gerenciar Professor
+
+actor     "Admin"                as ADM
+actor     "Professor"            as PROF
+rectangle ": MóduloAdmin"        as MA
+rectangle ": SistemaProfessores" as SP
+rectangle ": ServiçoNotificação" as NOT
+database  ": BancoDeDados"       as BD
+
+ADM -- SP  : "1: → cadastrarProfessor(dados)\n6: ← sucesso()"
+SP  -- BD  : "2: → criarProfessor(dados, senhaTemp)\n3: ← professorCriado()\n9: → salvarProfessor(id, dados)\n10: ← professorAtualizado()\n15: → deletarUsuario(id)\n16: ← confirmação()"
+SP  -- NOT : "4: → enviarBoasVindas(senhaTemp, link)"
+NOT -- PROF : "5: → boas-vindas (senha temporária + link 24h)"
+ADM -- MA  : "7: → atualizarProfessor(id, campos)\n12: ← sucesso()\n13: → removerProfessor(id)\n18: ← sucesso()"
+MA  -- SP  : "8: → atualizarProfessor(id, campos)\n11: ← professorAtualizado()\n14: → excluirProfessor(id)\n17: ← confirmação()"
+
+@enduml

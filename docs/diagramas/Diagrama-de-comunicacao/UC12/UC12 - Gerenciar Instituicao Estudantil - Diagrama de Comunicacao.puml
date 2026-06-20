@@ -1,0 +1,18 @@
+@startuml diagrama-comunicacao-UC12-gerenciar-instituicao
+left to right direction
+skinparam nodesep 80
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC12: Gerenciar Instituição Estudantil
+
+actor     "Admin"                 as ADM
+rectangle ": MóduloAdmin"         as MA
+rectangle ": SistemaInstituições" as SI
+database  ": BancoDeDados"        as BD
+
+ADM -- SI : "1: → cadastrarInstituicao(dados)\n4: ← sucesso()"
+ADM -- MA : "5: → atualizarInstituicao(id, campos)\n10: ← sucesso()\n11: → removerInstituicao(id)\n16: ← sucesso()"
+MA  -- SI : "6: → atualizarInstituicao(id, campos)\n9: ← instituicaoAtualizada()\n12: → excluirInstituicao(id)\n15: ← confirmação()"
+SI  -- BD : "2: → criarInstituicao(dados)\n3: ← instituicaoCriada()\n7: → salvarInstituicao(id, dados)\n8: ← instituicaoAtualizada()\n13: → deletarInstituicao(id)\n14: ← confirmação()"
+
+@enduml

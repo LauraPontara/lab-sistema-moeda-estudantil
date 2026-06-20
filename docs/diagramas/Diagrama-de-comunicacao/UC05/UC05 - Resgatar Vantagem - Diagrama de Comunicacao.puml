@@ -1,0 +1,26 @@
+@startuml diagrama-comunicacao-UC05-resgatar-vantagem
+left to right direction
+skinparam nodesep 70
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC05: Resgatar Vantagem
+
+actor     "Aluno"               as A
+actor     "Empresa\nParceira"   as E
+rectangle ": Resgate"           as PR
+rectangle ": SistemaVantagens"  as SV
+rectangle ": Agendador"         as CRON
+queue     ": FilaMensagens"     as FM
+rectangle ": ServiçoNotificação" as NOT
+database  ": BancoDeDados"      as BD
+
+A    -- PR  : "1: → confirmarResgate(vantagemId)\n7: ← exibirCupom(cupom)"
+PR   -- SV  : "2: → resgatarVantagem(studentId, vantagemId)\n6: ← resgateRealizado(cupom)"
+SV   -- BD  : "3: → debitarSaldoERegistrarResgate()\n4: ← resgateConfirmado()"
+SV   -- FM  : "5: → enfileirarEvento()\n9: ← lerEventosPendentes()"
+CRON -- SV  : "8: → consumirResgates()"
+SV   -- NOT : "10: → notificarAluno(cupom)\n12: → notificarEmpresa(cupom)"
+NOT  -- A   : "11: → email/WhatsApp com cupom"
+NOT  -- E   : "13: → email/WhatsApp de resgate"
+
+@enduml

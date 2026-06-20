@@ -1,0 +1,18 @@
+@startuml diagrama-comunicacao-UC10-gerenciar-vantagens
+left to right direction
+skinparam nodesep 80
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC10: Gerenciar Vantagens
+
+actor     "Empresa\nParceira"  as E
+rectangle ": SistemaEmpresa"   as PEm
+rectangle ": SistemaVantagens" as SV
+database  ": BancoDeDados"     as BD
+
+E   -- SV  : "1: → cadastrarVantagem(dados)\n4: ← sucesso()"
+E   -- PEm : "5: → atualizarVantagem(id, campos)\n10: ← sucesso()\n11: → removerVantagem(id)\n16: ← sucesso()"
+PEm -- SV  : "6: → atualizarVantagem(id, campos)\n9: ← vantagemAtualizada()\n12: → excluirVantagem(id)\n15: ← confirmação()"
+SV  -- BD  : "2: → criarVantagem(dados)\n3: ← vantagemCriada()\n7: → salvarVantagem(id, dados)\n8: ← vantagemAtualizada()\n13: → deletarVantagem(id)\n14: ← confirmação()"
+
+@enduml

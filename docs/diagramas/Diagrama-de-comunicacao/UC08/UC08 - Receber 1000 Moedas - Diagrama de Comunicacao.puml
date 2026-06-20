@@ -1,0 +1,24 @@
+@startuml diagrama-comunicacao-UC08-receber-1000-moedas
+left to right direction
+skinparam nodesep 80
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC08: Receber 1000 Moedas
+
+actor     "Professor"          as P
+rectangle ": MóduloProfessor"  as PP
+rectangle ": SistemaMoedas"    as SM
+rectangle ": AgendadorTarefas" as AT
+queue     ": FilaMensagens"    as FM
+rectangle ": ServiçoEmail"     as SE
+database  ": BancoDeDados"     as BD
+
+AT -- SM : "1: → executarCreditoSemestral()"
+SM -- BD : "2: → buscarTodosProfessores()\n3: ← listaProfessores()\n4: → creditarMoedas(professorId, 1000) [loop]\n5: ← novoSaldo()\n11: → consultarSaldo(professorId)\n12: ← saldoAtual()"
+SM -- FM : "6: → enfileirarNotificação(email, saldo)"
+FM -- SE : "7: → notificarCredito(email, saldo)"
+SE -- P  : "8: → email de crédito semestral"
+P  -- PP : "9: → acessarSaldo()\n14: ← exibirSaldo(saldoAtual)"
+PP -- SM : "10: → buscarSaldoProfessor(professorId)\n13: ← saldoAtual()"
+
+@enduml

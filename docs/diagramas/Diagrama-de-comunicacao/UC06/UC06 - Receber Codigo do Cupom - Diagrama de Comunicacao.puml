@@ -1,0 +1,28 @@
+@startuml diagrama-comunicacao-UC06-receber-codigo-cupom
+left to right direction
+skinparam nodesep 70
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC06: Receber Código do Cupom
+
+actor     "Aluno"               as A
+actor     "Empresa\nParceira"   as E
+rectangle ": Resgate"           as PR
+rectangle ": SistemaVantagens"  as SV
+rectangle ": Agendador"         as CRON
+queue     ": FilaMensagens"     as FM
+rectangle ": ServiçoNotificação" as NOT
+database  ": BancoDeDados"      as BD
+
+note top of PR : Pré-condição: UC05 - Resgatar Vantagem
+
+PR   -- SV  : "1: → processarCupom(resgateId)\n5: ← cupom()"
+SV   -- BD  : "2: → registrarCupom(cupom)\n3: ← cupomRegistrado()"
+SV   -- FM  : "4: → enfileirarEvento()\n8: ← lerEventosPendentes()"
+PR   -- A   : "6: → exibirCupom(cupom)"
+CRON -- SV  : "7: → consumirResgates()"
+SV   -- NOT : "9: → notificarAluno(cupom)\n11: → notificarEmpresa(cupom)"
+NOT  -- A   : "10: → email/WhatsApp com cupom"
+NOT  -- E   : "12: → email/WhatsApp de resgate"
+
+@enduml

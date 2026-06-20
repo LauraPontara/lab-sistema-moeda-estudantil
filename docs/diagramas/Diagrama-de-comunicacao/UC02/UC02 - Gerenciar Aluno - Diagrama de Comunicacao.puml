@@ -1,0 +1,22 @@
+@startuml diagrama-comunicacao-UC02-gerenciar-aluno
+left to right direction
+skinparam nodesep 80
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC02: Gerenciar Aluno
+
+actor     "Aluno"           as A
+actor     "Admin"           as ADM
+rectangle ": Cadastro"      as FC
+rectangle ": Perfil"        as FP
+rectangle ": SistemaAlunos" as SA
+database  ": BancoDeDados"  as BD
+
+A   -- FC : "1: → cadastrarAluno(dados)\n6: ← contaCriada()"
+FC  -- SA : "2: → cadastrarAluno(dados)\n5: ← alunoCriado()"
+A   -- FP : "7: → atualizarPerfil(dados)\n12: ← sucesso()"
+ADM -- FP : "13: → removerAluno(alunoId)\n18: ← sucesso()"
+FP  -- SA : "8: → atualizarPerfil(dados)\n11: ← perfilAtualizado()\n14: → excluirAluno(alunoId)\n17: ← confirmação()"
+SA  -- BD : "3: → criarUsuarioEPerfil(dados)\n4: ← alunoCriado()\n9: → salvarPerfil(dados)\n10: ← perfilAtualizado()\n15: → deletarUsuario(alunoId)\n16: ← confirmação()"
+
+@enduml

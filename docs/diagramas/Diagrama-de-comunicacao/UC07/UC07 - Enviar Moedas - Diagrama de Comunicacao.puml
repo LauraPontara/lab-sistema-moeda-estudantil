@@ -1,0 +1,26 @@
+@startuml diagrama-comunicacao-UC07-enviar-moedas
+left to right direction
+skinparam nodesep 70
+skinparam ranksep 60
+
+title Diagrama de Comunicação - UC07: Enviar Moedas
+
+actor     "Professor"          as P
+actor     "Aluno"              as A
+rectangle ": SistemaEnvio"      as PE
+rectangle ": SistemaMoedas"     as SM
+rectangle ": Agendador"         as CRON
+queue     ": FilaMensagens"     as FM
+rectangle ": ServiçoNotificação" as NOT
+database  ": BancoDeDados"      as BD
+
+P    -- PE  : "1: → enviarMoedas(alunoId, qtd, msg)\n9: ← exibirSucesso(novoSaldo)"
+PE   -- SM  : "2: → enviarMoedas(professorId, alunoId, qtd, msg)\n8: ← envioRealizado(novoSaldo)"
+SM   -- BD  : "3: → debitarProfessorECreditarAluno(qtd)\n4: ← saldosAtualizados()\n5: → registrarTransacao()\n6: ← transacaoRegistrada()"
+SM   -- FM  : "7: → enfileirarEvento()\n11: ← lerEventosPendentes()"
+CRON -- SM  : "10: → consumirTransferencias()"
+SM   -- NOT : "12: → notificarProfessor(qtd, saldo)\n14: → notificarAluno(prof, qtd, msg)"
+NOT  -- P   : "13: → confirmação de envio"
+NOT  -- A   : "15: → recebimento de moedas"
+
+@enduml
