@@ -1,6 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
-import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 // Design-system color palette (inline for email clients)
 const DS = {
@@ -62,20 +60,47 @@ function codeBlock(value: string): string {
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
 
-  private transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT) || 465,
-    // Porta 465 usa SSL direto (secure: true); 587 usa STARTTLS (secure: false).
-    // No Render a 587 sofre timeout, então usamos 465.
-    secure: (Number(process.env.SMTP_PORT) || 465) === 465,
-    // Força IPv4: o Render não tem saída IPv6 e o Gmail resolve para IPv6,
-    // causando ENETUNREACH ao conectar no SMTP.
-    family: 4,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  } as SMTPTransport.Options);
+  // Envio via API HTTP do Brevo (porta 443). SMTP não funciona no Render free
+  // (portas SMTP de saída são bloqueadas), então usamos a API REST.
+  private readonly brevoApiKey = process.env.BREVO_API_KEY;
+  private readonly senderEmail =
+    process.env.BREVO_SENDER_EMAIL || process.env.SMTP_USER;
+  private readonly senderName =
+    process.env.BREVO_SENDER_NAME || 'Sistema de Moedas';
+
+  /**
+   * Envia um email transacional via API do Brevo.
+   * Lança em caso de falha — cada chamador decide se trata como melhor-esforço.
+   */
+  private async sendEmail(params: {
+    to: string;
+    subject: string;
+    html: string;
+  }): Promise<void> {
+    if (!this.brevoApiKey) {
+      throw new Error('BREVO_API_KEY não configurada');
+    }
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': this.brevoApiKey,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        sender: { name: this.senderName, email: this.senderEmail },
+        to: [{ email: params.to }],
+        subject: params.subject,
+        htmlContent: params.html,
+      }),
+    });
+
+    if (!response.ok) {
+      const detail = await response.text();
+      throw new Error(`Brevo API ${response.status}: ${detail}`);
+    }
+  }
 
   async sendProfessorWelcome(params: {
     to: string;
@@ -95,8 +120,7 @@ export class EmailService {
     `;
 
     try {
-      await this.transporter.sendMail({
-        from: `"Sistema de Moedas" <${process.env.SMTP_USER}>`,
+      await this.sendEmail({
         to: params.to,
         subject: 'Bem-vindo ao Sistema de Moeda Estudantil 🎓',
         html: emailWrapper(body),
@@ -127,8 +151,7 @@ export class EmailService {
     `;
 
     try {
-      await this.transporter.sendMail({
-        from: `"Sistema de Moedas" <${process.env.SMTP_USER}>`,
+      await this.sendEmail({
         to: params.to,
         subject: 'Redefinição de senha — Sistema de Moeda Estudantil',
         html: emailWrapper(body),
@@ -158,8 +181,7 @@ export class EmailService {
     `;
 
     try {
-      await this.transporter.sendMail({
-        from: `"Sistema de Moedas" <${process.env.SMTP_USER}>`,
+      await this.sendEmail({
         to: params.to,
         subject: 'Confirmação de envio de moedas',
         html: emailWrapper(body),
@@ -189,8 +211,7 @@ export class EmailService {
     `;
 
     try {
-      await this.transporter.sendMail({
-        from: `"Sistema de Moedas" <${process.env.SMTP_USER}>`,
+      await this.sendEmail({
         to: params.to,
         subject: 'Você recebeu moedas no Sistema de Moeda Estudantil',
         html: emailWrapper(body),
@@ -220,8 +241,7 @@ export class EmailService {
     `;
 
     try {
-      await this.transporter.sendMail({
-        from: `"Sistema de Moedas" <${process.env.SMTP_USER}>`,
+      await this.sendEmail({
         to: params.to,
         subject: 'Seu cupom de resgate no Sistema de Moeda Estudantil',
         html: emailWrapper(body),
@@ -249,8 +269,7 @@ export class EmailService {
     `;
 
     try {
-      await this.transporter.sendMail({
-        from: `"Sistema de Moedas" <${process.env.SMTP_USER}>`,
+      await this.sendEmail({
         to: params.to,
         subject: 'Nova confirmação de resgate no Sistema de Moeda Estudantil',
         html: emailWrapper(body),
