@@ -13,7 +13,8 @@ import {
     redeemAdvantage,
     type AdvantageCard as Advantage,
 } from "@/lib/api";
-import { Search, Sparkles } from "lucide-react";
+import { Check, Copy, Search, Sparkles } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useMemo, useState } from "react";
 
 type FilterValue = "TODAS" | AdvantageCategory;
@@ -82,6 +83,18 @@ function RedeemSuccessModal({
   couponCode: string;
   onClose: () => void;
 }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(couponCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard indisponível (ex.: contexto não seguro) — o código segue visível em texto
+    }
+  }
+
   return (
     <Modal
       isOpen
@@ -98,15 +111,49 @@ function RedeemSuccessModal({
       }
     >
       <p className="text-sm text-foreground">
-        Seu cupom foi gerado e enviado para seu e-mail.
+        Mostre o QR Code para a empresa ou informe o código abaixo. Ele também foi
+        enviado para o seu e-mail.
       </p>
+
+      <div className="mt-4 flex justify-center">
+        <div className="rounded-xl border-2 border-border bg-surface p-4 shadow-[4px_4px_0_0_hsl(var(--border))]">
+          <QRCodeSVG
+            value={couponCode}
+            size={180}
+            level="M"
+            marginSize={2}
+            bgColor="#FFFFFF"
+            fgColor="#0A0A0A"
+          />
+        </div>
+      </div>
+
       <div className="mt-4 rounded-xl border-2 border-border bg-muted px-4 py-3">
         <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
           Código do cupom
         </p>
-        <p className="mt-1 font-display text-2xl font-extrabold text-primary">
-          {couponCode}
-        </p>
+        <div className="mt-1 flex items-center justify-between gap-3">
+          <p className="font-display text-2xl font-extrabold text-primary">
+            {couponCode}
+          </p>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border-2 border-border bg-surface px-3 py-1.5 text-xs font-bold transition-colors hover:bg-surface/80"
+          >
+            {copied ? (
+              <>
+                <Check className="h-3.5 w-3.5" />
+                Copiado!
+              </>
+            ) : (
+              <>
+                <Copy className="h-3.5 w-3.5" />
+                Copiar código
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </Modal>
   );
