@@ -237,7 +237,7 @@ export class EmailService {
       <p style="margin:0 0 12px;">Olá, <strong>${params.studentName}</strong>!</p>
       <p style="margin:0 0 12px;">Seu resgate de <strong>${params.advantageTitle}</strong> foi confirmado com a empresa <strong>${params.companyName}</strong>.</p>
       <p style="margin:0 0 12px;"><strong>Cupom:</strong> ${codeBlock(params.couponCode)}</p>
-      <p style="margin:0;"><strong>Seu saldo atual:</strong> ${codeBlock(String(params.balanceAfter))} XP</p>
+      <p style="margin:0;"><strong>Seu saldo atual:</strong> ${codeBlock(String(params.balanceAfter))} moedas</p>
     `;
 
     try {

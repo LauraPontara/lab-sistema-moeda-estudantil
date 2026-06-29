@@ -102,13 +102,13 @@ export class AuthService {
 
     void this.emailService.sendPasswordReset({
       to: user.email,
-      name: user.email,
+      name: user.email.split('@')[0],
       resetToken,
     });
 
     void this.whatsappService.sendPasswordReset({
       phone: user.whatsappPhone,
-      name: user.email,
+      name: user.email.split('@')[0],
       resetLink,
     });
 

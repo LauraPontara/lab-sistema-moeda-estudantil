@@ -1,0 +1,1 @@
+export const SEMESTER_COIN_ALLOWANCE = 1000;

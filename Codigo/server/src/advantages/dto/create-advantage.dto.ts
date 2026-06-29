@@ -8,23 +8,12 @@ import {
   MinLength,
 } from 'class-validator';
 import { ADVANTAGE_CATEGORIES } from '../../database/schemas';
+import {
+  ADVANTAGE_ICONS,
+  AdvantageIcon,
+} from '../constants/advantage-icons.constants';
 
-export const ADVANTAGE_ICONS = [
-  'utensils',
-  'coffee',
-  'graduation',
-  'book',
-  'notebook',
-  'film',
-  'ticket',
-  'gift',
-  'shopping',
-  'tag',
-  'pizza',
-  'percent',
-] as const;
-
-export type AdvantageIcon = (typeof ADVANTAGE_ICONS)[number];
+export { ADVANTAGE_ICONS, AdvantageIcon };
 
 export class CreateAdvantageDto {
   @IsString()

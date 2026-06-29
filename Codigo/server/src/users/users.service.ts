@@ -6,6 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '../database/schemas';
+import { BCRYPT_ROUNDS } from '../common/constants/bcrypt.constants';
 import { EmailAlreadyInUseException } from '../common/exceptions/email-already-in-use.exception';
 import { throwOnUniqueViolation } from '../common/exceptions/unique-constraint.util';
 import { generateTemporaryPassword } from '../common/utils/password.util';
@@ -46,7 +47,7 @@ export class UsersService {
     const user = await this.usersRepository.findById(id);
 
     if (!user) {
-      throw new NotFoundException('Usuario nao encontrado.');
+      throw new NotFoundException('Usuário não encontrado.');
     }
 
     return UserMapper.toModel(user);
@@ -154,7 +155,7 @@ export class UsersService {
     const user = await this.usersRepository.update(id, dto);
 
     if (!user) {
-      throw new NotFoundException('Usuario nao encontrado.');
+      throw new NotFoundException('Usuário não encontrado.');
     }
 
     return UserMapper.toModel(user);
@@ -177,7 +178,7 @@ export class UsersService {
         );
 
         if (!student) {
-          throw new NotFoundException('Aluno nao encontrado.');
+          throw new NotFoundException('Aluno não encontrado.');
         }
 
         return UserMapper.toStudentProfileModel(student);
@@ -189,7 +190,7 @@ export class UsersService {
         );
 
         if (!professor) {
-          throw new NotFoundException('Professor nao encontrado.');
+          throw new NotFoundException('Professor não encontrado.');
         }
 
         return UserMapper.toProfessorProfileModel(professor);
@@ -199,14 +200,14 @@ export class UsersService {
           await this.usersRepository.updatePartnerCompanyProfile(userId, dto);
 
         if (!partnerCompany) {
-          throw new NotFoundException('Empresa parceira nao encontrada.');
+          throw new NotFoundException('Empresa parceira não encontrada.');
         }
 
         return UserMapper.toPartnerCompanyProfileModel(partnerCompany);
       }
       case UserRole.ADMIN:
       default: {
-        throw new BadRequestException('Perfil sem dados editaveis.');
+        throw new BadRequestException('Perfil sem dados editáveis.');
       }
     }
   }
@@ -215,26 +216,26 @@ export class UsersService {
     switch (role) {
       case UserRole.STUDENT: {
         const student = await this.usersRepository.findStudentByUserId(userId);
-        if (!student) throw new NotFoundException('Aluno nao encontrado.');
+        if (!student) throw new NotFoundException('Aluno não encontrado.');
         return UserMapper.toStudentProfileModel(student);
       }
       case UserRole.PARTNER_COMPANY: {
         const partnerCompany =
           await this.usersRepository.findPartnerCompanyByUserId(userId);
         if (!partnerCompany)
-          throw new NotFoundException('Empresa parceira nao encontrada.');
+          throw new NotFoundException('Empresa parceira não encontrada.');
         return UserMapper.toPartnerCompanyProfileModel(partnerCompany);
       }
       case UserRole.PROFESSOR: {
         const professor =
           await this.usersRepository.findProfessorByUserId(userId);
         if (!professor)
-          throw new NotFoundException('Professor nao encontrado.');
+          throw new NotFoundException('Professor não encontrado.');
         return UserMapper.toProfessorProfileModel(professor);
       }
       case UserRole.ADMIN:
       default:
-        throw new BadRequestException('Perfil sem dados extras.');
+        throw new BadRequestException('Perfil sem dados adicionais.');
     }
   }
 
@@ -242,7 +243,7 @@ export class UsersService {
     const deleted = await this.usersRepository.delete(id);
 
     if (!deleted) {
-      throw new NotFoundException('Usuario nao encontrado.');
+      throw new NotFoundException('Usuário não encontrado.');
     }
   }
 
@@ -260,7 +261,7 @@ export class UsersService {
     );
 
     if (!professor) {
-      throw new NotFoundException('Professor nao encontrado.');
+      throw new NotFoundException('Professor não encontrado.');
     }
 
     return UserMapper.toProfessorModel(professor);
@@ -290,7 +291,7 @@ export class UsersService {
   }
 
   private hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, 10);
+    return bcrypt.hash(password, BCRYPT_ROUNDS);
   }
 
   private ensureDocumentMatchesRole(role: UserRole, document: string): void {
@@ -301,11 +302,11 @@ export class UsersService {
       (role === UserRole.STUDENT || role === UserRole.PROFESSOR) &&
       !cpfRegex.test(document)
     ) {
-      throw new BadRequestException('CPF invalido para este perfil.');
+      throw new BadRequestException('CPF inválido para este perfil.');
     }
 
     if (role === UserRole.PARTNER_COMPANY && !cnpjRegex.test(document)) {
-      throw new BadRequestException('CNPJ invalido para este perfil.');
+      throw new BadRequestException('CNPJ inválido para este perfil.');
     }
   }
 }

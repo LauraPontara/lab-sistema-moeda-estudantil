@@ -53,6 +53,16 @@ export class AdvantagesRepository {
     };
   }
 
+  private baseQuery() {
+    return this.db
+      .select(this.selectAdvantageFields())
+      .from(advantages)
+      .innerJoin(
+        partnerCompanyProfiles,
+        eq(partnerCompanyProfiles.userId, advantages.companyId),
+      );
+  }
+
   async create(
     companyId: string,
     dto: CreateAdvantageDto,
@@ -79,13 +89,7 @@ export class AdvantagesRepository {
   }
 
   async findByCompany(companyId: string): Promise<AdvantageModel[]> {
-    const rows = await this.db
-      .select(this.selectAdvantageFields())
-      .from(advantages)
-      .innerJoin(
-        partnerCompanyProfiles,
-        eq(partnerCompanyProfiles.userId, advantages.companyId),
-      )
+    const rows = await this.baseQuery()
       .where(
         and(eq(advantages.companyId, companyId), eq(advantages.active, true)),
       )
@@ -95,13 +99,7 @@ export class AdvantagesRepository {
   }
 
   async findActiveCatalog(): Promise<AdvantageModel[]> {
-    const rows = await this.db
-      .select(this.selectAdvantageFields())
-      .from(advantages)
-      .innerJoin(
-        partnerCompanyProfiles,
-        eq(partnerCompanyProfiles.userId, advantages.companyId),
-      )
+    const rows = await this.baseQuery()
       .where(eq(advantages.active, true))
       .orderBy(desc(advantages.createdAt));
 
@@ -128,13 +126,7 @@ export class AdvantagesRepository {
   }
 
   async findById(id: string): Promise<AdvantageModel | null> {
-    const [row] = await this.db
-      .select(this.selectAdvantageFields())
-      .from(advantages)
-      .innerJoin(
-        partnerCompanyProfiles,
-        eq(partnerCompanyProfiles.userId, advantages.companyId),
-      )
+    const [row] = await this.baseQuery()
       .where(eq(advantages.id, id))
       .limit(1);
 
