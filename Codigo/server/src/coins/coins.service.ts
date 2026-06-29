@@ -4,6 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserRole } from '../database/schemas';
+import { semesterCode } from '../common/utils/semester.util';
+import { SEMESTER_COIN_ALLOWANCE } from './coins.constants';
 import { CoinTransferQueueService } from './coin-transfer-queue.service';
 import { CoinsRepository } from './coins.repository';
 import { SendCoinsDto } from './dto/send-coins.dto';
@@ -11,12 +13,6 @@ import {
   CoinStatementModel,
   SendCoinsResponseModel,
 } from './models/coin-statement.model';
-
-function semesterCode(date: Date): string {
-  const month = date.getUTCMonth() + 1;
-  const semester = month <= 6 ? 1 : 2;
-  return `${date.getUTCFullYear()}-${semester}`;
-}
 
 @Injectable()
 export class CoinsService {
@@ -89,6 +85,9 @@ export class CoinsService {
   }
 
   async creditSemesterAllowance(date = new Date()): Promise<number> {
-    return this.coinsRepository.creditSemesterAllowances(semesterCode(date));
+    return this.coinsRepository.creditSemesterAllowances(
+      semesterCode(date),
+      SEMESTER_COIN_ALLOWANCE,
+    );
   }
 }

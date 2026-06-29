@@ -6,13 +6,9 @@ import * as schema from '../database/schemas';
 import { EmailService } from '../email/email.service';
 import { WhatsAppService } from '../whatsapp/whatsapp.service';
 import { CoinTransferEvent } from './coin-transfer-event.type';
+import { QueueMessageRow } from '../common/queue/queue-message.type';
 
 type Database = PostgresJsDatabase<typeof schema>;
-
-type QueueMessageRow = {
-  msg_id: number;
-  message: CoinTransferEvent;
-};
 
 @Injectable()
 export class CoinTransferQueueService implements OnModuleInit {
@@ -53,7 +49,7 @@ export class CoinTransferQueueService implements OnModuleInit {
         sql`select msg_id, message from pgmq.read(${this.queueName}, ${visibilityTimeout}, ${batchSize})`,
       );
 
-      const rows = result as unknown as QueueMessageRow[];
+      const rows = result as unknown as QueueMessageRow<CoinTransferEvent>[];
 
       if (!rows.length) {
         return 0;

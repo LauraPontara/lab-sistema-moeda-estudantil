@@ -5,6 +5,7 @@ import {
   ForbiddenException,
   Get,
   HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -65,8 +66,12 @@ export class UsersController {
   @Patch('users/:id')
   update(
     @Param('id') id: string,
+    @CurrentUser() currentUser: JwtPayload,
     @Body() dto: UpdateUserDto,
   ): Promise<UserModel> {
+    if (currentUser.sub !== id && currentUser.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('Acesso negado.');
+    }
     return this.usersService.update(id, dto);
   }
 
@@ -99,6 +104,7 @@ export class UsersController {
   }
 
   @Post('students')
+  @HttpCode(HttpStatus.CREATED)
   createStudent(@Body() dto: CreateStudentDto): Promise<StudentModel> {
     return this.usersService.createStudent(dto);
   }
@@ -110,6 +116,7 @@ export class UsersController {
   }
 
   @Post('partner-companies')
+  @HttpCode(HttpStatus.CREATED)
   createPartnerCompany(
     @Body() dto: CreatePartnerCompanyDto,
   ): Promise<PartnerCompanyModel> {
@@ -125,6 +132,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Post('professors')
+  @HttpCode(HttpStatus.CREATED)
   createProfessor(@Body() dto: CreateProfessorDto): Promise<ProfessorModel> {
     return this.usersService.createProfessor(dto);
   }
@@ -149,6 +157,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Post('admins')
+  @HttpCode(HttpStatus.CREATED)
   createAdmin(@Body() dto: CreateAdminDto): Promise<AdministratorModel> {
     return this.usersService.createAdmin(dto);
   }

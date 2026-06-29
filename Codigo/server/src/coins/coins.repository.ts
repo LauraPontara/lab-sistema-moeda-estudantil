@@ -298,7 +298,10 @@ export class CoinsRepository {
     };
   }
 
-  async creditSemesterAllowances(semesterCode: string): Promise<number> {
+  async creditSemesterAllowances(
+    semesterCode: string,
+    amount: number,
+  ): Promise<number> {
     const professors = await this.db
       .select({ id: users.id })
       .from(users)
@@ -313,7 +316,7 @@ export class CoinsRepository {
           .values({
             professorId: professor.id,
             semesterCode,
-            amount: 1000,
+            amount,
           })
           .onConflictDoNothing()
           .returning({ id: professorSemesterAllowances.id });
@@ -327,7 +330,7 @@ export class CoinsRepository {
         await tx
           .update(users)
           .set({
-            coinBalance: sql`${users.coinBalance} + 1000`,
+            coinBalance: sql`${users.coinBalance} + ${amount}`,
             updatedAt: new Date(),
           })
           .where(eq(users.id, professor.id));

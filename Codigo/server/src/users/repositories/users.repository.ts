@@ -12,6 +12,8 @@ import {
   users,
 } from '../../database/schemas';
 import * as schema from '../../database/schemas';
+import { semesterCode } from '../../common/utils/semester.util';
+import { SEMESTER_COIN_ALLOWANCE } from '../../coins/coins.constants';
 import { CreateAdminDto } from '../dto/create-admin.dto';
 import { CreatePartnerCompanyDto } from '../dto/create-partner-company.dto';
 import { CreateProfessorDto } from '../dto/create-professor.dto';
@@ -25,12 +27,6 @@ type StudentProfile = typeof studentProfiles.$inferSelect;
 type PartnerCompanyProfile = typeof partnerCompanyProfiles.$inferSelect;
 type ProfessorProfile = typeof professorProfiles.$inferSelect;
 type AdministratorProfile = typeof administratorProfiles.$inferSelect;
-
-function getSemesterCode(date: Date): string {
-  const month = date.getUTCMonth() + 1;
-  const semester = month <= 6 ? 1 : 2;
-  return `${date.getUTCFullYear()}-${semester}`;
-}
 
 export type UserWithStudentProfile = {
   user: AuthenticatedUser;
@@ -236,7 +232,7 @@ export class UsersRepository {
           email: dto.email,
           passwordHash,
           role: UserRole.PROFESSOR,
-          coinBalance: 1000,
+          coinBalance: SEMESTER_COIN_ALLOWANCE,
           whatsappPhone: dto.whatsappPhone ?? null,
         })
         .returning();
@@ -254,8 +250,8 @@ export class UsersRepository {
 
       await tx.insert(professorSemesterAllowances).values({
         professorId: user.id,
-        semesterCode: getSemesterCode(new Date()),
-        amount: 1000,
+        semesterCode: semesterCode(new Date()),
+        amount: SEMESTER_COIN_ALLOWANCE,
       });
 
       return { user, profile };
@@ -455,17 +451,15 @@ export class UsersRepository {
   }
 
   async countByInstitutionId(institutionId: string): Promise<number> {
-    const [profRow] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(professorProfiles)
-      .where(eq(professorProfiles.institutionId, institutionId));
-
-    const [studRow] = await this.db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(studentProfiles)
-      .where(eq(studentProfiles.institutionId, institutionId));
-
-    return (profRow?.count ?? 0) + (studRow?.count ?? 0);
+    const [row] = await this.db.execute<{ total: number }>(
+      sql`
+        SELECT (
+          (SELECT COUNT(*) FROM professor_profiles WHERE institution_id = ${institutionId}) +
+          (SELECT COUNT(*) FROM student_profiles   WHERE institution_id = ${institutionId})
+        )::int AS total
+      `,
+    );
+    return row?.total ?? 0;
   }
 
   async updatePassword(userId: string, hashedPassword: string): Promise<void> {
